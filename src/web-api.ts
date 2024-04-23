@@ -13,11 +13,6 @@ import {
 
 const app = express();
 
-// API endpoint to get available models
-// app.get('/api/available-models', async (req, res) => {
-//   // call ollama /tags endpoing on one of the containers per machine.
-// });
-
 app.get('/api/config', (req, res) => {
   const config = getConfiguration();
 
@@ -75,6 +70,8 @@ app.delete('/api/assignments', async (req, res) => {
   await deleteAssignment(modelId, gpuId);
   res.sendStatus(204);
 });
+
+// Control the node server
 
 // Start server
 app.listen(3000, async () => {

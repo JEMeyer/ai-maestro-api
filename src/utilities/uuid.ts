@@ -1,4 +1,5 @@
-// Helper function to generate a UUID
+import { v4 as uuidv4 } from 'uuid';
+
 export const generateUUID = () => {
-  // Implementation to generate a UUID
+  return uuidv4();
 };
