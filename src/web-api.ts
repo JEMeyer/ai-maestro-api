@@ -10,6 +10,9 @@ import {
   deleteModel,
   getConfiguration,
 } from './services/database';
+import { updateModelToServerMapping } from './utilities/configuration';
+import { loadModel, makeContainer, removeAllContainers } from './services/node';
+import { AxiosResponse } from 'axios';
 
 const app = express();
 
@@ -71,7 +74,47 @@ app.delete('/api/assignments', async (req, res) => {
   res.sendStatus(204);
 });
 
-// Control the node server
+// Refresh the mapping in the proxy server - will start routing to the mapping immediately
+app.post('/api/refresh-proxy', async (_req, res) => {
+  await updateModelToServerMapping();
+  res.sendStatus(200);
+});
+
+app.post('/api/ensure-containers', async (req, res) => {
+  const { computers, gpus, models } = await getConfiguration();
+
+  // First down all the containers, then re-make the ones we want
+  computers.forEach(async (computer) => {
+    await removeAllContainers(computer.ipAddr);
+  });
+
+  // Loop through each model, start the containers, load the model in each container
+  const makeAndLoadContainerPromises: Promise<AxiosResponse>[] = [];
+  models.forEach(async (model) => {
+    const ipAddr = computers.find(({ id }) => {
+      const gpu = gpus.find((gpu) => model.gpuIds?.includes(gpu.id));
+      return id === gpu?.computerId;
+    })?.ipAddr;
+    if (ipAddr != null) {
+      makeAndLoadContainerPromises.push(
+        makeContainer(ipAddr, {
+          containerName: model.containerName,
+          port: model.port.toString(),
+          gpuIds: model.gpuIds ?? [],
+        }).then(() => {
+          return loadModel(ipAddr, {
+            containerName: model.containerName,
+            modelName: model.name,
+          });
+        })
+      );
+    }
+  });
+
+  await Promise.all(makeAndLoadContainerPromises);
+
+  res.sendStatus(200);
+});
 
 // Start server
 app.listen(3000, async () => {

@@ -8,14 +8,11 @@ import {
 import { GenerateRequest, ChatRequest, EmbeddingsRequest } from 'ollama';
 import { ServerStatus } from './utilities/serverStatus';
 import { IncomingMessage } from 'http';
-import { fetchModelToServerMapping } from './utilities/configuration';
+import { modelToServerMap } from './utilities/configuration';
 
 const app = express();
 app.use(express.json());
 const serverStatus = new ServerStatus();
-
-// In-memory storage for the model-to-server mapping
-let modelToServerMap: Record<string, string> = {};
 
 // Custom router function to determine the target server based on the model
 const modelRouter = (req: IncomingMessage) => {
@@ -81,12 +78,6 @@ const proxy = createProxyMiddleware(proxyOptions);
 app.use('/api/completions', queueMiddleware, proxy);
 app.use('/api/chat', queueMiddleware, proxy);
 app.use('/api/embeddings', queueMiddleware, proxy);
-
-// Endpoint to refresh the mapping
-app.post('/refresh-mapping', async (_req, res) => {
-  modelToServerMap = await fetchModelToServerMapping();
-  res.sendStatus(200);
-});
 
 // Start the server
 const port = 11434;

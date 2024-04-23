@@ -1,6 +1,9 @@
 import { getConfiguration } from '../services/database';
 
-export const fetchModelToServerMapping = async () => {
+// In-memory storage for the model-to-server mapping
+export let modelToServerMap: Record<string, string> = {};
+
+export const updateModelToServerMapping = async () => {
   try {
     const modelToServersMap: Record<string, string[]> = {};
     const { models, gpus, computers } = await getConfiguration();
@@ -19,7 +22,7 @@ export const fetchModelToServerMapping = async () => {
       modelToServersMap[model.name] = serverAddresses;
     }
 
-    return result;
+    modelToServerMap = result;
   } catch (error) {
     console.error('Error fetching model-to-server mapping:', error);
     throw error;
