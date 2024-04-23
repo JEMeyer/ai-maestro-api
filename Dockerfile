@@ -41,4 +41,4 @@ COPY . .
 EXPOSE 4000
 
 # Start the application using PM2
-CMD ["pm2-runtime", "dist/main.js"]
+CMD ["pm2-runtime", "dist/web-api.js", "dist/proxy.js"]
