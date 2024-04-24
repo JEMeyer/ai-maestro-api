@@ -1,13 +1,15 @@
 import { getConfiguration } from '../services/database';
+import { ServerStatus } from './serverStatus';
+
+const serverStatus = new ServerStatus();
 
 // In-memory storage for the model-to-server mapping
-export let modelToServerMap: Record<string, string> = {};
+let modelToServerMap: Record<string, string[]> = {};
 
 export const updateModelToServerMapping = async () => {
   try {
-    const modelToServersMap: Record<string, string[]> = {};
     const { models, gpus, computers } = await getConfiguration();
-    const result: Record<string, string> = {};
+    const result: Record<string, string[]> = {};
 
     for (const model of models) {
       const gpuIds = model.gpuIds || [];
@@ -19,7 +21,7 @@ export const updateModelToServerMapping = async () => {
         })
         .filter(Boolean);
 
-      modelToServersMap[model.name] = serverAddresses;
+      result[model.name] = serverAddresses;
     }
 
     modelToServerMap = result;
@@ -27,4 +29,18 @@ export const updateModelToServerMapping = async () => {
     console.error('Error fetching model-to-server mapping:', error);
     throw error;
   }
+};
+
+export const reserveServer = (modelName: string) => {
+  // Get model gpuIds we can use
+  const servers = modelToServerMap[modelName];
+
+  // Loop and find the first one that is free, otherwise return undefined
+  for (const server of servers) {
+    if (!serverStatus.isServerBusy(server)) {
+      serverStatus.markServerBusy(server);
+      return server;
+    }
+  }
+  return undefined;
 };
