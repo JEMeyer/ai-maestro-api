@@ -28,4 +28,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ OWNER_LC }}/${{ github.event.repository.name }}:latest
+          tags: ghcr.io/${{ env.OWNER_LC }}/${{ github.event.repository.name }}:latest
