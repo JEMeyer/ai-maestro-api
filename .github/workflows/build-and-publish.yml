@@ -1,5 +1,7 @@
 name: Build and Publish Docker Image
 
+permissions: write-all
+
 on:
   workflow_dispatch:
 
