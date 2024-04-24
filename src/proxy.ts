@@ -5,30 +5,17 @@ import {
   Options,
   responseInterceptor,
 } from 'http-proxy-middleware';
-import { GenerateRequest, ChatRequest, EmbeddingsRequest } from 'ollama';
-import { ServerStatus } from './utilities/serverStatus';
+import { serverStatus } from './utilities/serverStatus';
 import { IncomingMessage } from 'http';
 import { reserveServer } from './utilities/configuration';
 
 const app = express();
 app.use(express.json());
-const serverStatus = new ServerStatus();
 
 // Custom router function to determine the target server based on the model
 const modelRouter = (req: IncomingMessage): string | undefined => {
   const expressReq = req as express.Request;
-  let targetServer: string | undefined;
-
-  if (expressReq.path === '/api/completions') {
-    const completionReq = expressReq.body as GenerateRequest;
-    targetServer = reserveServer(completionReq.model);
-  } else if (expressReq.path === '/api/chat') {
-    const chatReq = expressReq.body as ChatRequest;
-    targetServer = reserveServer(chatReq.model);
-  } else if (expressReq.path === '/api/embeddings') {
-    const embeddingReq = expressReq.body as EmbeddingsRequest;
-    targetServer = reserveServer(embeddingReq.model);
-  }
+  const targetServer = reserveServer(expressReq.body.model);
 
   if (targetServer === undefined) {
     // If no available server is found, wait for a short interval and retry

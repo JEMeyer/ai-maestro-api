@@ -1,7 +1,5 @@
 import { getConfiguration } from '../services/database';
-import { ServerStatus } from './serverStatus';
-
-const serverStatus = new ServerStatus();
+import { serverStatus } from './serverStatus';
 
 // In-memory storage for the model-to-server mapping
 let modelToServerMap: Record<string, string[]> = {};
@@ -17,7 +15,7 @@ export const updateModelToServerMapping = async () => {
         .map((gpuId) => {
           const gpu = gpus.find((g) => g.id === gpuId);
           const computer = computers.find((c) => c.id === gpu?.computerId);
-          return `${computer?.ipAddr}:${model.port}`;
+          return `http://${computer?.ipAddr}:${model.port}`;
         })
         .filter(Boolean);
 

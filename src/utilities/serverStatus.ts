@@ -1,4 +1,4 @@
-export class ServerStatus {
+class ServerStatus {
   private pendingRequests: Map<string, boolean> = new Map();
 
   public isServerBusy(serverId: string): boolean {
@@ -13,3 +13,5 @@ export class ServerStatus {
     this.pendingRequests.set(serverId, false);
   }
 }
+
+export const serverStatus = new ServerStatus();

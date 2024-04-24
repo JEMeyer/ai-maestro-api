@@ -75,7 +75,7 @@ app.delete('/api/assignments', async (req, res) => {
 });
 
 // Refresh the mapping in the proxy server - will start routing to the mapping immediately
-app.post('/api/refresh-proxy', async (_req, res) => {
+app.post('/api/refresh-proxy-mapping', async (_req, res) => {
   await updateModelToServerMapping();
   res.sendStatus(200);
 });
