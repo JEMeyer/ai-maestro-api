@@ -8,6 +8,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Set lower case owner name
+        run: |
+          echo "OWNER_LC=${OWNER,,}" >>${GITHUB_ENV}
+        env:
+          OWNER: '${{ github.repository_owner }}'
       - name: Checkout code
         uses: actions/checkout@v2
 
@@ -23,4 +28,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/lowercase(${{ github.event.repository.name }}):latest
+          tags: ghcr.io/${{ OWNER_LC }}/${{ github.event.repository.name }}:latest
