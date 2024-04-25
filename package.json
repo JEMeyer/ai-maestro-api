@@ -1,4 +1,16 @@
 {
+  "name": "llm-manager",
+  "version": "1.0.0",
+  "description": "REST api to control llm docker containers",
+  "main": "main.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/main.js",
+    "dev": "tsc-watch --onSuccess \"node dist/main.js\"",
+    "lint": "eslint --fix \"src/**/*.ts\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Joe Meyer",
   "dependencies": {
     "axios": "^1.6.8",
     "express": "^4.19.2",
