@@ -10,7 +10,7 @@ module.exports = {
     node: true,
   },
   rules: {
-    'prettier/prettier': 'error',
+    'prettier/prettier': ['error', { endOfLine: 'auto' }],
     'import/no-unresolved': 'error',
     'import/no-extraneous-dependencies': 'error',
     '@typescript-eslint/no-explicit-any': 'off',
