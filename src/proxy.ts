@@ -1,4 +1,3 @@
-// main.ts
 import express from 'express';
 import {
   createProxyMiddleware,
@@ -10,6 +9,8 @@ import { IncomingMessage } from 'http';
 import { reserveServer } from './utilities/configuration';
 
 const app = express();
+
+// Middleware to parse JSON bodies
 app.use(express.json());
 
 // Custom router function to determine the target server based on the model
@@ -33,6 +34,15 @@ const proxyOptions: Options = {
   router: modelRouter,
   selfHandleResponse: true, // Required for responseInterceptor to work
   on: {
+    proxyReq: function (proxyReq, req) {
+      // Router handles reserving the server - we need to make sure the model stays loaded in VRAM
+      const expressReq = req as express.Request;
+      const bodyData = expressReq.body;
+      bodyData['keep_alive'] = -1;
+      const bodyString = JSON.stringify(bodyData);
+      proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyString));
+      proxyReq.write(bodyString);
+    },
     proxyRes: responseInterceptor(async (responseBuffer, proxyRes) => {
       // Get the target server's IP address and port from the proxyRes object
       const targetServerAddress = proxyRes.socket.remoteAddress;
@@ -51,7 +61,7 @@ const proxyOptions: Options = {
 // Create the proxy middleware
 const proxy = createProxyMiddleware(proxyOptions);
 
-// Apply the queue middleware and proxy middleware to the specific endpoints
+// Apply the proxy middleware to the specific endpoints
 app.use('/api/completions', proxy);
 app.use('/api/chat', proxy);
 app.use('/api/embeddings', proxy);
