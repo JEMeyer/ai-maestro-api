@@ -16,6 +16,9 @@ import { AxiosResponse } from 'axios';
 
 const app = express();
 
+// Middleware to parse JSON bodies
+app.use(express.json());
+
 app.get('/api/config', async (req, res) => {
   const config = await getConfiguration();
 
