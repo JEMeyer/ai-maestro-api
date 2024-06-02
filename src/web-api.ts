@@ -16,8 +16,8 @@ import { AxiosResponse } from 'axios';
 
 const app = express();
 
-app.get('/api/config', (req, res) => {
-  const config = getConfiguration();
+app.get('/api/config', async (req, res) => {
+  const config = await getConfiguration();
 
   res.json(config);
 });

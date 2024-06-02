@@ -1,13 +1,7 @@
-import mariadb from 'mariadb';
+import fs from 'fs/promises';
 import { generateUUID } from '../utilities/uuid';
 
-const pool = mariadb.createPool({
-  host: process.env.MYSQL_HOST,
-  user: process.env.MYSQL_USER,
-  password: process.env.MYSQL_PASSWORD,
-  database: process.env.MYSQL_DB,
-  connectionLimit: 5,
-});
+const filePath = './config.json';
 
 export interface Computer {
   id: string;
@@ -31,56 +25,55 @@ export interface Model {
   gpuIds: string[] | null;
 }
 
-export async function getConfiguration(): Promise<{
+export interface Configuration {
   computers: Computer[];
   gpus: GPU[];
   models: Model[];
-}> {
-  let conn;
+}
+
+async function readConfigFile(): Promise<Configuration> {
   try {
-    conn = await pool.getConnection();
-
-    const computers: Computer[] = await conn.query(
-      'SELECT id, name, ip_addr FROM computers'
-    );
-    const gpus: GPU[] = await conn.query(
-      'SELECT id, name, vram_size, computer_id FROM gpus'
-    );
-    const models: Model[] = await conn.query(`
-    SELECT
-      m.id,
-      m.name,
-      m.container_name,
-      m.size,
-      m.port,
-      JSON_ARRAYAGG(mga.gpu_id) AS gpuIds
-    FROM
-      models m
-      LEFT JOIN model_gpu_assignments mga ON m.id = mga.model_id
-    GROUP BY
-      m.id
-  `);
-
-    return { computers, gpus, models };
+    const data = await fs.readFile(filePath, 'utf8');
+    return JSON.parse(data);
   } catch (err) {
-    console.error('Error loading configuration:', err);
+    if (
+      err instanceof Error &&
+      'code' in err &&
+      (err as any).code === 'ENOENT'
+    ) {
+      return { computers: [], gpus: [], models: [] };
+    }
     throw err;
-  } finally {
-    if (conn) conn.release();
   }
+}
+
+async function writeConfigFile(data: Configuration) {
+  try {
+    await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf8');
+  } catch (err) {
+    console.error('Error writing to config file:', err);
+    throw err;
+  }
+}
+
+export async function getConfiguration(): Promise<Configuration> {
+  return await readConfigFile();
 }
 
 // Computers
 export const createComputer = async (name: string, ipAddr: string) => {
   const id = generateUUID();
-  const query = 'INSERT INTO computers (id, name, ip_addr) VALUES ($1, $2, $3)';
-  await pool.query(query, [id, name, ipAddr]);
+  const config = await readConfigFile();
+  const newComputer = { id, name, ipAddr };
+  config.computers.push(newComputer);
+  await writeConfigFile(config);
   return id;
 };
 
 export const deleteComputer = async (id: string) => {
-  const query = 'DELETE FROM computers WHERE id = $1';
-  await pool.query(query, [id]);
+  const config = await readConfigFile();
+  config.computers = config.computers.filter((computer) => computer.id !== id);
+  await writeConfigFile(config);
 };
 
 // GPUs
@@ -90,15 +83,17 @@ export const createGPU = async (
   computerId: string
 ) => {
   const id = generateUUID();
-  const query =
-    'INSERT INTO gpus (id, name, vram_size, computer_id) VALUES ($1, $2, $3, $4)';
-  await pool.query(query, [id, name, vramSize, computerId]);
+  const config = await readConfigFile();
+  const newGPU = { id, name, vramSize, computerId };
+  config.gpus.push(newGPU);
+  await writeConfigFile(config);
   return id;
 };
 
 export const deleteGPU = async (id: string) => {
-  const query = 'DELETE FROM gpus WHERE id = $1';
-  await pool.query(query, [id]);
+  const config = await readConfigFile();
+  config.gpus = config.gpus.filter((gpu) => gpu.id !== id);
+  await writeConfigFile(config);
 };
 
 // Models
@@ -109,26 +104,35 @@ export const createModel = async (
   port: number
 ) => {
   const id = generateUUID();
-  const query =
-    'INSERT INTO models (id, name, container_name, size, port) VALUES ($1, $2, $3, $4, $5)';
-  await pool.query(query, [id, name, containerName, size, port]);
+  const config = await readConfigFile();
+  const newModel = { id, name, containerName, size, port, gpuIds: [] };
+  config.models.push(newModel);
+  await writeConfigFile(config);
   return id;
 };
 
 export const deleteModel = async (id: string) => {
-  const query = 'DELETE FROM models WHERE id = $1';
-  await pool.query(query, [id]);
+  const config = await readConfigFile();
+  config.models = config.models.filter((model) => model.id !== id);
+  await writeConfigFile(config);
 };
 
 // Model-GPU Assignments
 export const createAssignment = async (modelId: string, gpuId: string) => {
-  const query =
-    'INSERT INTO model_gpu_assignments (model_id, gpu_id) VALUES ($1, $2)';
-  await pool.query(query, [modelId, gpuId]);
+  const config = await readConfigFile();
+  const model = config.models.find((model) => model.id === modelId);
+  if (model) {
+    model.gpuIds = model.gpuIds || [];
+    model.gpuIds.push(gpuId);
+    await writeConfigFile(config);
+  }
 };
 
 export const deleteAssignment = async (modelId: string, gpuId: string) => {
-  const query =
-    'DELETE FROM model_gpu_assignments WHERE model_id = $1 AND gpu_id = $2';
-  await pool.query(query, [modelId, gpuId]);
+  const config = await readConfigFile();
+  const model = config.models.find((model) => model.id === modelId);
+  if (model && model.gpuIds) {
+    model.gpuIds = model.gpuIds.filter((id) => id !== gpuId);
+    await writeConfigFile(config);
+  }
 };

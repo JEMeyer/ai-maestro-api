@@ -37,8 +37,10 @@ RUN npm ci --only=production
 # Copy the application source code
 COPY . .
 
-# Expose the port your application listens on
-EXPOSE 4000
+# Proxy
+EXPOSE 11434
+# Web API
+EXPOSE 3000
 
 # Start the application using PM2
 CMD ["pm2-runtime", "dist/web-api.js", "dist/proxy.js"]
