@@ -43,4 +43,4 @@ EXPOSE 11434
 EXPOSE 3000
 
 # Start the application using PM2
-CMD ["pm2-runtime", "dist/proxy.js", "dist/web-api.js"]
+CMD ["pm2-runtime", "dist/main.js"]

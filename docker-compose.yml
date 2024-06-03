@@ -4,5 +4,8 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
-      - "4000:4000"
+      - '11434:11434'
+      - '3000:3000'
+  llm-manager-ui:
+    image: ghcr.io/mlc-ai/web-llm:latest
     restart: unless-stopped
