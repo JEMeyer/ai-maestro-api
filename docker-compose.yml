@@ -1,11 +1,6 @@
 services:
-  llm-manager-node:
-    build: .
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+  llm-manager:
+    image: ghcr.io/jemeyer/llm-manager:latest
     ports:
       - '11434:11434'
       - '3000:3000'
-  llm-manager-ui:
-    image: ghcr.io/mlc-ai/web-llm:latest
-    restart: unless-stopped
