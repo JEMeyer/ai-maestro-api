@@ -29,10 +29,10 @@ FROM base
 WORKDIR /app
 
 # Copy the package.json and package-lock.json files from the builder image
-COPY --from=builder /usr/src/app/package*.json ./
+COPY --from=builder /app/package*.json ./
 
 # Copy the built JavaScript files from the builder image
-COPY --from=builder /usr/src/app/dist ./dist
+COPY --from=builder /app/dist ./dist
 
 # Install production dependencies
 RUN npm ci --only=production
