@@ -1,0 +1,362 @@
+[
+  {
+    "modelName": "llama3",
+    "modelSize": 4.7
+  },
+  {
+    "modelName": "codestral",
+    "modelSize": 13
+  },
+  {
+    "modelName": "phi3",
+    "modelSize": 2.4
+  },
+  {
+    "modelName": "aya",
+    "modelSize": 4.8
+  },
+  {
+    "modelName": "mistral",
+    "modelSize": 4.1
+  },
+  {
+    "modelName": "gemma",
+    "modelSize": 5
+  },
+  {
+    "modelName": "mixtral",
+    "modelSize": 26
+  },
+  {
+    "modelName": "llama2",
+    "modelSize": 3.8
+  },
+  {
+    "modelName": "codegemma",
+    "modelSize": 5
+  },
+  {
+    "modelName": "command-r",
+    "modelSize": 20
+  },
+  {
+    "modelName": "command-r-plus",
+    "modelSize": 59
+  },
+  {
+    "modelName": "llava",
+    "modelSize": 4.7
+  },
+  {
+    "modelName": "qwen",
+    "modelSize": 2.3
+  },
+  {
+    "modelName": "codellama",
+    "modelSize": 3.8
+  },
+  {
+    "modelName": "dolphin-mixtral",
+    "modelSize": 26
+  },
+  {
+    "modelName": "llama2-uncensored",
+    "modelSize": 3.8
+  },
+  {
+    "modelName": "deepseek-coder",
+    "modelSize": 0.776
+  },
+  {
+    "modelName": "nomic-embed-text",
+    "modelSize": 0.274
+  },
+  {
+    "modelName": "mistral-openorca",
+    "modelSize": 4.1
+  },
+  {
+    "modelName": "dolphin-mistral",
+    "modelSize": 4.1
+  },
+  {
+    "modelName": "phi",
+    "modelSize": 1.6
+  },
+  {
+    "modelName": "orca-mini",
+    "modelSize": 2
+  },
+  {
+    "modelName": "zephyr",
+    "modelSize": 4.1
+  },
+  {
+    "modelName": "nous-hermes2",
+    "modelSize": 6.1
+  },
+  {
+    "modelName": "starcoder2",
+    "modelSize": 1.7
+  },
+  {
+    "modelName": "llama2-chinese",
+    "modelSize": 3.8
+  },
+  {
+    "modelName": "vicuna",
+    "modelSize": 3.8
+  },
+  {
+    "modelName": "wizard-vicuna-uncensored",
+    "modelSize": 3.8
+  },
+  {
+    "modelName": "dolphin-llama3",
+    "modelSize": 4.7
+  },
+  {
+    "modelName": "yi",
+    "modelSize": 3.5
+  },
+  {
+    "modelName": "mxbai-embed-large",
+    "modelSize": 0.67
+  },
+  {
+    "modelName": "wizardlm2",
+    "modelSize": 4.1
+  },
+  {
+    "modelName": "tinyllama",
+    "modelSize": 0.638
+  },
+  {
+    "modelName": "starcoder",
+    "modelSize": 1.8
+  },
+  {
+    "modelName": "openhermes",
+    "modelSize": 4.1
+  },
+  {
+    "modelName": "openchat",
+    "modelSize": 4.1
+  },
+  {
+    "modelName": "tinydolphin",
+    "modelSize": 0.637
+  },
+  {
+    "modelName": "wizardcoder",
+    "modelSize": 3.8
+  },
+  {
+    "modelName": "stable-code",
+    "modelSize": 1.6
+  },
+  {
+    "modelName": "neural-chat",
+    "modelSize": 4.1
+  },
+  {
+    "modelName": "wizard-math",
+    "modelSize": 4.1
+  },
+  {
+    "modelName": "phind-codellama",
+    "modelSize": 19
+  },
+  {
+    "modelName": "starling-lm",
+    "modelSize": 4.1
+  },
+  {
+    "modelName": "stablelm2",
+    "modelSize": 0.983
+  },
+  {
+    "modelName": "dolphincoder",
+    "modelSize": 4.2
+  },
+  {
+    "modelName": "nous-hermes",
+    "modelSize": 3.8
+  },
+  {
+    "modelName": "codeqwen",
+    "modelSize": 4.2
+  },
+  {
+    "modelName": "sqlcoder",
+    "modelSize": 4.1
+  },
+  {
+    "modelName": "orca2",
+    "modelSize": 3.8
+  },
+  {
+    "modelName": "dolphin-phi",
+    "modelSize": 1.6
+  },
+  {
+    "modelName": "solar",
+    "modelSize": 6.1
+  },
+  {
+    "modelName": "deepseek-llm",
+    "modelSize": 4
+  },
+  {
+    "modelName": "yarn-llama2",
+    "modelSize": 3.8
+  },
+  {
+    "modelName": "llama3-gradient",
+    "modelSize": 4.7
+  },
+  {
+    "modelName": "xwinlm",
+    "modelSize": 3.8
+  },
+  {
+    "modelName": "all-minilm",
+    "modelSize": 0.046
+  },
+  {
+    "modelName": "samantha-mistral",
+    "modelSize": 4.1
+  },
+  {
+    "modelName": "bakllava",
+    "modelSize": 4.7
+  },
+  {
+    "modelName": "wizardlm",
+    "modelSize": 39
+  },
+  {
+    "modelName": "stable-beluga",
+    "modelSize": 3.8
+  },
+  {
+    "modelName": "medllama2",
+    "modelSize": 3.8
+  },
+  {
+    "modelName": "wizardlm-uncensored",
+    "modelSize": 7.4
+  },
+  {
+    "modelName": "nous-hermes2-mixtral",
+    "modelSize": 26
+  },
+  {
+    "modelName": "llama3-chatqa",
+    "modelSize": 4.7
+  },
+  {
+    "modelName": "yarn-mistral",
+    "modelSize": 4.1
+  },
+  {
+    "modelName": "codeup",
+    "modelSize": 7.4
+  },
+  {
+    "modelName": "llama-pro",
+    "modelSize": 4.7
+  },
+  {
+    "modelName": "meditron",
+    "modelSize": 3.8
+  },
+  {
+    "modelName": "everythinglm",
+    "modelSize": 7.4
+  },
+  {
+    "modelName": "llava-llama3",
+    "modelSize": 5.5
+  },
+  {
+    "modelName": "nexusraven",
+    "modelSize": 7.4
+  },
+  {
+    "modelName": "stablelm-zephyr",
+    "modelSize": 1.6
+  },
+  {
+    "modelName": "magicoder",
+    "modelSize": 3.8
+  },
+  {
+    "modelName": "codebooga",
+    "modelSize": 19
+  },
+  {
+    "modelName": "snowflake-arctic-embed",
+    "modelSize": 0.669
+  },
+  {
+    "modelName": "moondream",
+    "modelSize": 1.7
+  },
+  {
+    "modelName": "mistrallite",
+    "modelSize": 4.1
+  },
+  {
+    "modelName": "wizard-vicuna",
+    "modelSize": 7.4
+  },
+  {
+    "modelName": "duckdb-nsql",
+    "modelSize": 3.8
+  },
+  {
+    "modelName": "goliath",
+    "modelSize": 66
+  },
+  {
+    "modelName": "open-orca-platypus2",
+    "modelSize": 7.4
+  },
+  {
+    "modelName": "megadolphin",
+    "modelSize": 68
+  },
+  {
+    "modelName": "notux",
+    "modelSize": 26
+  },
+  {
+    "modelName": "llava-phi3",
+    "modelSize": 2.9
+  },
+  {
+    "modelName": "notus",
+    "modelSize": 4.1
+  },
+  {
+    "modelName": "dbrx",
+    "modelSize": 74
+  },
+  {
+    "modelName": "granite-code",
+    "modelSize": 2
+  },
+  {
+    "modelName": "falcon2",
+    "modelSize": 6.4
+  },
+  {
+    "modelName": "alfred",
+    "modelSize": 24
+  },
+  {
+    "modelName": "deepseek-v2",
+    "modelSize": 8.9
+  }
+]

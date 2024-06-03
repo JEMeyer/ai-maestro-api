@@ -31,7 +31,7 @@ const scrapeOllamaModels = async () => {
 
     // Write the modelNames array to a JSON file
     writeFileSync(filename, JSON.stringify(modelNames, null, 2));
-    console.log(`Saved ${modelNames.length} model names to modelNames.json`);
+    console.log(`Saved ${modelNames.length} model names to ${filename}`);
   } catch (error) {
     console.error('Error fetching or parsing the Ollama library page:', error);
   }
