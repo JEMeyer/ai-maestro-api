@@ -4,7 +4,7 @@ import {
   Options,
   responseInterceptor,
 } from 'http-proxy-middleware';
-import { serverStatus } from './utilities/serverStatus';
+import { Compute } from './utilities/computeStatus';
 import { IncomingMessage } from 'http';
 import { reserveGPU } from './utilities/configuration';
 
@@ -14,14 +14,16 @@ const app = express();
 app.use(express.json());
 
 // Custom router function to determine the target server based on the model
-const modelRouter = (req: IncomingMessage): string | undefined => {
+const modelRouter = (req: IncomingMessage) => {
   const expressReq = req as express.Request;
   const targetServer = reserveGPU(expressReq.body.model);
+
+  if (targetServer instanceof Error) return undefined;
 
   if (targetServer === undefined) {
     // If no available server is found, wait for a short interval and retry
     setTimeout(() => {
-      modelRouter(req);
+      return modelRouter(req);
     }, 300);
   }
 
@@ -33,7 +35,7 @@ const handleResponse = async (responseBuffer: any, proxyRes: any) => {
   const targetServerPort = proxyRes.socket.remotePort;
 
   // Now that the request is done, we can free up the gpu
-  serverStatus.markAvailable(`${targetServerAddress}:${targetServerPort}`);
+  Compute.markAvailable(`${targetServerAddress}:${targetServerPort}`);
   return responseBuffer; // Return the original response buffer
 };
 

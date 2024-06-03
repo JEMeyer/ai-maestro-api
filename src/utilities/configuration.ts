@@ -1,40 +1,41 @@
 import {
-  Assignment,
-  Configuration,
   getCurrentConfig,
+  getGPUFromPath,
+  getPathFromAssignment,
 } from '../services/database';
-import { serverStatus } from './serverStatus';
-
-const getPathFromAssignment = (
-  assignment: Assignment,
-  config: Configuration
-) => {
-  // Find the computer this model is going to. Taking 1st GPU id is fine since it always has >= 1.
-  // Even multi-gpu setups still go to the same computer so others aren't relevant here.
-  const gpu = config.gpus.find((g) => g.id === assignment.gpuIds[0]);
-  const computer = config.computers.find((c) => c.id === gpu?.computerId);
-
-  // Create a full path string - must be enough for the router in main.ts to recognize it as a route.
-  return `http://${computer?.ipAddr}:${assignment.port}`;
-};
+import { Compute } from './computeStatus';
 
 // In-memory storage for the model-to-server mapping. With a model name as the key returns an array of paths (ip + port).
-const modelToPathMap: Record<string, string[]> = {};
+let MODEL_TO_PATH_MAP: Record<string, string[]> = {};
 
 export const updateModelToServerMapping = async () => {
   try {
     const config = getCurrentConfig();
 
+    // Build up a new record
+    const pathMap: Record<string, string[]> = {};
+
     // Loop through each assignment in the fetched configuration
     for (const assignment of config.assignments) {
-      const path = getPathFromAssignment(assignment, config);
+      const path = getPathFromAssignment(assignment);
 
       // Initialize the array if it doesn't exist yet
-      if (!modelToPathMap[assignment.modelName])
-        modelToPathMap[assignment.modelName] = [];
+      if (!pathMap[assignment.modelName]) pathMap[assignment.modelName] = [];
 
-      // Add the created full path to the array associated with the model name in the modelToPathMap object
-      modelToPathMap[assignment.modelName].push(path);
+      // Add the created full path to the array associated with the model name in the MODEL_TO_PATH_MAP object
+      pathMap[assignment.modelName].push(path);
+    }
+
+    // Sort in descending order. Higher priority comes first
+    for (const modelName in pathMap) {
+      pathMap[modelName].sort((a, b) => {
+        const priorityA = getGPUFromPath(a)?.weight ?? 1;
+        const priorityB = getGPUFromPath(b)?.weight ?? 1;
+
+        return priorityB - priorityA;
+      });
+
+      MODEL_TO_PATH_MAP = pathMap;
     }
   } catch (error) {
     console.error('Error fetching model-to-server mapping:', error);
@@ -49,14 +50,19 @@ export const updateModelToServerMapping = async () => {
  * @param {string} modelName - The name of the model for which to reserve a GPU.
  * @returns {string | undefined} - The address of the reserved server if available; otherwise, undefined.
  */
-export const reserveGPU = (modelName: string): string | undefined => {
+export const reserveGPU = (modelName: string) => {
   // Get model gpuIds we can use
-  const paths = modelToPathMap[modelName];
+  const paths = MODEL_TO_PATH_MAP[modelName];
 
   // Loop and find the first one that is free, otherwise return undefined
   for (const path of paths) {
-    if (!serverStatus.isBusy(path)) {
-      serverStatus.markBusy(path);
+    const isBusy = Compute.isBusy(path);
+
+    if (isBusy instanceof Error) return isBusy;
+
+    if (!isBusy) {
+      if (Compute.markBusy(path) instanceof Error)
+        return Error('Failed to mark server as busy');
       return path;
     }
   }

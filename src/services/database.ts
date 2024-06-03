@@ -3,25 +3,26 @@ import { generateUUID } from '../utilities/uuid';
 
 const filePath = './config.json';
 
-export interface Computer {
+interface Computer {
   id: string;
   name: string;
   ipAddr: string;
 }
 
-export interface GPU {
+interface GPU {
   id: string;
   name: string;
   vramSize: number;
   computerId: string;
+  weight?: number;
 }
 
-export interface Model {
+interface Model {
   name: string;
   size: number;
 }
 
-export interface Assignment {
+interface Assignment {
   id: string;
   name: string;
   modelName: string;
@@ -29,7 +30,7 @@ export interface Assignment {
   port: number;
 }
 
-export interface Configuration {
+interface Configuration {
   computers: Computer[];
   gpus: GPU[];
   llms: Model[];
@@ -43,6 +44,39 @@ let CURRENT_CONFIGURATION: Configuration = {
   llms: [],
   diffusors: [],
   assignments: [],
+};
+
+export const extractIpAddressAndPort = (
+  url: string
+): [string, number] | null => {
+  const regex = /http:\/\/([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+):(\d+)/;
+  const match = url.match(regex);
+  if (match && match[1] && match[2]) {
+    return [match[1], parseInt(match[2], 10)];
+  }
+  return null;
+};
+
+export const getPathFromAssignment = (assignment: Assignment) => {
+  const config = getCurrentConfig();
+  // Find the computer this model is going to. Taking 1st GPU id is fine since it always has >= 1.
+  // Even multi-gpu setups still go to the same computer so others aren't relevant here.
+  const gpu = config.gpus.find((g) => g.id === assignment.gpuIds[0]);
+  const computer = config.computers.find((c) => c.id === gpu?.computerId);
+
+  // Create a full path string - must be enough for the router in main.ts to recognize it as a route.
+  return `http://${computer?.ipAddr}:${assignment.port}`;
+};
+
+export const getGPUFromPath = (path: string) => {
+  const config = getCurrentConfig();
+  const ipAndPort = extractIpAddressAndPort(path) ?? ['', 0];
+
+  // First, find the computer with the given IP addres, then find a gpu with that computer's id
+  const computer = config.computers.find((c) => c.ipAddr === ipAndPort[0]);
+  const gpu = config.gpus.find((g) => g.computerId === computer?.id);
+
+  return gpu;
 };
 
 export const getCurrentConfig = () => {
@@ -106,10 +140,11 @@ export const deleteComputer = async (id: string) => {
 export const createGPU = async (
   name: string,
   vramSize: number,
-  computerId: string
+  computerId: string,
+  weight?: number
 ) => {
   const id = generateUUID();
-  const newGPU = { id, name, vramSize, computerId };
+  const newGPU = { id, name, vramSize, computerId, weight: weight };
   CURRENT_CONFIGURATION.gpus.push(newGPU);
   await writeConfigFile();
   return id;
