@@ -6,7 +6,7 @@ import {
 } from 'http-proxy-middleware';
 import { serverStatus } from './utilities/serverStatus';
 import { IncomingMessage } from 'http';
-import { reserveServer } from './utilities/configuration';
+import { reserveGPU } from './utilities/configuration';
 
 const app = express();
 
@@ -16,26 +16,43 @@ app.use(express.json());
 // Custom router function to determine the target server based on the model
 const modelRouter = (req: IncomingMessage): string | undefined => {
   const expressReq = req as express.Request;
-  const targetServer = reserveServer(expressReq.body.model);
+  const targetServer = reserveGPU(expressReq.body.model);
 
   if (targetServer === undefined) {
     // If no available server is found, wait for a short interval and retry
     setTimeout(() => {
       modelRouter(req);
-    }, 500);
+    }, 300);
   }
 
   return targetServer;
 };
 
-// Proxy middleware options
-const proxyOptions: Options = {
+const handleResponse = async (responseBuffer: any, proxyRes: any) => {
+  const targetServerAddress = proxyRes.socket.remoteAddress;
+  const targetServerPort = proxyRes.socket.remotePort;
+
+  // Now that the request is done, we can free up the gpu
+  serverStatus.markAvailable(`${targetServerAddress}:${targetServerPort}`);
+  return responseBuffer; // Return the original response buffer
+};
+
+const diffusionProxyOptions: Options = {
+  changeOrigin: true,
+  router: modelRouter,
+  selfHandleResponse: true,
+  on: {
+    proxyRes: responseInterceptor(handleResponse),
+  },
+};
+
+const ollamaProxyOptions: Options = {
   changeOrigin: true,
   router: modelRouter,
   selfHandleResponse: true, // Required for responseInterceptor to work
   on: {
     proxyReq: function (proxyReq, req) {
-      // Router handles reserving the server - we need to make sure the model stays loaded in VRAM
+      // We need to modify only the ollama requests to enforce keep_alive
       const expressReq = req as express.Request;
       const bodyData = expressReq.body;
       bodyData['keep_alive'] = -1;
@@ -43,28 +60,22 @@ const proxyOptions: Options = {
       proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyString));
       proxyReq.write(bodyString);
     },
-    proxyRes: responseInterceptor(async (responseBuffer, proxyRes) => {
-      // Get the target server's IP address and port from the proxyRes object
-      const targetServerAddress = proxyRes.socket.remoteAddress;
-      const targetServerPort = proxyRes.socket.remotePort;
-
-      // Mark the server as available using the IP address and port
-      serverStatus.markServerAvailable(
-        `${targetServerAddress}:${targetServerPort}`
-      );
-
-      return responseBuffer; // Return the original response buffer
-    }),
+    proxyRes: responseInterceptor(handleResponse),
   },
 };
 
 // Create the proxy middleware
-const proxy = createProxyMiddleware(proxyOptions);
+const ollamaProxy = createProxyMiddleware(ollamaProxyOptions);
+const diffusionProxy = createProxyMiddleware(diffusionProxyOptions);
 
 // Apply the proxy middleware to the specific endpoints
-app.use('/api/completions', proxy);
-app.use('/api/chat', proxy);
-app.use('/api/embeddings', proxy);
+app.use('/api/completions', ollamaProxy);
+app.use('/api/chat', ollamaProxy);
+app.use('/api/embeddings', ollamaProxy);
+
+// Note, we'll use the same port for the diffusion to consolidate apps for proxy
+app.use('/txt2img', diffusionProxy);
+app.use('/img2img', diffusionProxy);
 
 // Start the server
 const port = 11434;

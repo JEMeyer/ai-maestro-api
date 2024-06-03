@@ -4,35 +4,32 @@ interface MakeContainerProps {
   containerName: string;
   port: string;
   gpuIds: string[];
+  diffusionModel?: string;
 }
 
 interface LoadModelProps {
   modelName: string;
   containerName: string;
+  port?: number; // used for SD
 }
 
 export const makeContainer = async (
   ipAddr: string,
   props: MakeContainerProps
 ): Promise<AxiosResponse> => {
-  const { containerName, port, gpuIds } = props;
-  return axios.post(`${ipAddr}:${process.env.EDGE_SERVER_PORT}/up-container`, {
-    containerName,
-    port,
-    gpuIds,
-  });
+  return axios.post(
+    `${ipAddr}:${process.env.EDGE_SERVER_PORT}/up-container`,
+    props
+  );
 };
 
 export const removeContainer = async (
   ipAddr: string,
-  props: { containerName: string }
+  props: { containerName: string; mode: string }
 ): Promise<AxiosResponse> => {
-  const { containerName } = props;
   return axios.post(
     `${ipAddr}:${process.env.EDGE_SERVER_PORT}/down-container`,
-    {
-      containerName,
-    }
+    props
   );
 };
 
@@ -48,9 +45,8 @@ export const loadModel = async (
   ipAddr: string,
   props: LoadModelProps
 ): Promise<AxiosResponse> => {
-  const { modelName, containerName } = props;
-  return axios.post(`${ipAddr}:${process.env.EDGE_SERVER_PORT}/load-model`, {
-    modelName,
-    containerName,
-  });
+  return axios.post(
+    `${ipAddr}:${process.env.EDGE_SERVER_PORT}/load-model`,
+    props
+  );
 };

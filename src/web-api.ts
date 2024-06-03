@@ -8,7 +8,8 @@ import {
   deleteComputer,
   deleteGPU,
   deleteModel,
-  getConfiguration,
+  getCurrentConfig,
+  readConfigFile,
 } from './services/database';
 import { updateModelToServerMapping } from './utilities/configuration';
 import { loadModel, makeContainer, removeAllContainers } from './services/node';
@@ -20,7 +21,8 @@ const app = express();
 app.use(express.json());
 
 app.get('/api/config', async (req, res) => {
-  const config = await getConfiguration();
+  const { fromFile }: { fromFile: boolean } = req.body;
+  const config = fromFile ? await readConfigFile() : getCurrentConfig();
 
   res.json(config);
 });
@@ -53,27 +55,27 @@ app.delete('/api/gpus/:id', async (req, res) => {
 
 // Models
 app.post('/api/models', async (req, res) => {
-  const { name, containerName, size, port } = req.body;
-  const id = await createModel(name, containerName, size, port);
+  const { name, size, type } = req.body;
+  const id = await createModel(name, size, type);
   res.json({ id });
 });
 
-app.delete('/api/models/:id', async (req, res) => {
-  const { id } = req.params;
-  await deleteModel(id);
+app.delete('/api/models/:name', async (req, res) => {
+  const { name } = req.params;
+  await deleteModel(name);
   res.sendStatus(204);
 });
 
 // Model-GPU Assignments
 app.post('/api/assignments', async (req, res) => {
-  const { modelId, gpuId } = req.body;
-  await createAssignment(modelId, gpuId);
+  const { model, gpuId, name } = req.body;
+  await createAssignment(model, gpuId, name);
   res.sendStatus(201); // Created
 });
 
-app.delete('/api/assignments', async (req, res) => {
-  const { modelId, gpuId } = req.body;
-  await deleteAssignment(modelId, gpuId);
+app.delete('/api/assignments/:id', async (req, res) => {
+  const { id } = req.body;
+  await deleteAssignment(id);
   res.sendStatus(204);
 });
 
@@ -84,7 +86,7 @@ app.post('/api/refresh-proxy-mapping', async (_req, res) => {
 });
 
 app.post('/api/ensure-containers', async (req, res) => {
-  const { computers, gpus, models } = await getConfiguration();
+  const { computers, gpus, diffusors, assignments } = await readConfigFile();
 
   // First down all the containers, then re-make the ones we want
   computers.forEach(async (computer) => {
@@ -93,23 +95,28 @@ app.post('/api/ensure-containers', async (req, res) => {
 
   // Loop through each model, start the containers, load the model in each container
   const makeAndLoadContainerPromises: Promise<AxiosResponse>[] = [];
-  models.forEach(async (model) => {
+  assignments.forEach(async (assignment) => {
     const ipAddr = computers.find(({ id }) => {
-      const gpu = gpus.find((gpu) => model.gpuIds?.includes(gpu.id));
-      return id === gpu?.computerId;
+      return id === gpus[0].computerId;
     })?.ipAddr;
+    const isDiffusionModel = diffusors.some(
+      ({ name }) => name === assignment.modelName
+    );
+
     if (ipAddr != null) {
       makeAndLoadContainerPromises.push(
         makeContainer(ipAddr, {
-          containerName: model.containerName,
-          port: model.port.toString(),
-          gpuIds: model.gpuIds ?? [],
-        }).then(() => {
-          return loadModel(ipAddr, {
-            containerName: model.containerName,
-            modelName: model.name,
-          });
-        })
+          containerName: assignment.name,
+          port: String(assignment.port),
+          gpuIds: assignment.gpuIds,
+          diffusionModel: isDiffusionModel ? assignment.modelName : undefined,
+        }).then(() =>
+          loadModel(ipAddr, {
+            containerName: assignment.name,
+            modelName: assignment.modelName,
+            port: assignment.port,
+          })
+        )
       );
     }
   });

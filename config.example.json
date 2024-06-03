@@ -1,5 +1,7 @@
 {
   "computers": [],
   "gpus": [],
-  "models": []
+  "llms": [],
+  "diffusors": [],
+  "assignments": []
 }

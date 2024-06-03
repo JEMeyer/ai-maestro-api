@@ -17,63 +17,89 @@ export interface GPU {
 }
 
 export interface Model {
+  name: string;
+  size: number;
+}
+
+export interface Assignment {
   id: string;
   name: string;
-  containerName: string;
-  size: number;
+  modelName: string;
+  gpuIds: string[];
   port: number;
-  gpuIds: string[] | null;
 }
 
 export interface Configuration {
   computers: Computer[];
   gpus: GPU[];
-  models: Model[];
+  llms: Model[];
+  diffusors: Model[];
+  assignments: Assignment[];
 }
 
-async function readConfigFile(): Promise<Configuration> {
+let CURRENT_CONFIGURATION: Configuration = {
+  computers: [],
+  gpus: [],
+  llms: [],
+  diffusors: [],
+  assignments: [],
+};
+
+export const getCurrentConfig = () => {
+  return Object.freeze({ ...CURRENT_CONFIGURATION });
+};
+
+export const readConfigFile = async (): Promise<Configuration> => {
   try {
     const data = await fs.readFile(filePath, 'utf8');
-    return JSON.parse(data);
+    const config = JSON.parse(data);
+    CURRENT_CONFIGURATION = config;
+    return config;
   } catch (err) {
     if (
       err instanceof Error &&
       'code' in err &&
       (err as any).code === 'ENOENT'
     ) {
-      return { computers: [], gpus: [], models: [] };
+      return {
+        computers: [],
+        gpus: [],
+        llms: [],
+        diffusors: [],
+        assignments: [],
+      };
     }
     throw err;
   }
-}
+};
 
-async function writeConfigFile(data: Configuration) {
+async function writeConfigFile() {
   try {
-    await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf8');
+    await fs.writeFile(
+      filePath,
+      JSON.stringify(CURRENT_CONFIGURATION, null, 2),
+      'utf8'
+    );
   } catch (err) {
     console.error('Error writing to config file:', err);
     throw err;
   }
 }
 
-export async function getConfiguration(): Promise<Configuration> {
-  return await readConfigFile();
-}
-
 // Computers
 export const createComputer = async (name: string, ipAddr: string) => {
   const id = generateUUID();
-  const config = await readConfigFile();
   const newComputer = { id, name, ipAddr };
-  config.computers.push(newComputer);
-  await writeConfigFile(config);
+  CURRENT_CONFIGURATION.computers.push(newComputer);
+  await writeConfigFile();
   return id;
 };
 
 export const deleteComputer = async (id: string) => {
-  const config = await readConfigFile();
-  config.computers = config.computers.filter((computer) => computer.id !== id);
-  await writeConfigFile(config);
+  CURRENT_CONFIGURATION.computers = CURRENT_CONFIGURATION.computers.filter(
+    (computer) => computer.id !== id
+  );
+  await writeConfigFile();
 };
 
 // GPUs
@@ -83,56 +109,78 @@ export const createGPU = async (
   computerId: string
 ) => {
   const id = generateUUID();
-  const config = await readConfigFile();
   const newGPU = { id, name, vramSize, computerId };
-  config.gpus.push(newGPU);
-  await writeConfigFile(config);
+  CURRENT_CONFIGURATION.gpus.push(newGPU);
+  await writeConfigFile();
   return id;
 };
 
 export const deleteGPU = async (id: string) => {
-  const config = await readConfigFile();
-  config.gpus = config.gpus.filter((gpu) => gpu.id !== id);
-  await writeConfigFile(config);
+  CURRENT_CONFIGURATION.gpus = CURRENT_CONFIGURATION.gpus.filter(
+    (gpu) => gpu.id !== id
+  );
+  await writeConfigFile();
 };
 
 // Models
 export const createModel = async (
   name: string,
-  containerName: string,
   size: number,
-  port: number
+  type: 'llm' | 'diffusor'
 ) => {
-  const id = generateUUID();
-  const config = await readConfigFile();
-  const newModel = { id, name, containerName, size, port, gpuIds: [] };
-  config.models.push(newModel);
-  await writeConfigFile(config);
-  return id;
+  const newModel = { name, size };
+
+  if (type === 'llm') CURRENT_CONFIGURATION.llms.push(newModel);
+  else if (type === 'diffusor') CURRENT_CONFIGURATION.diffusors.push(newModel);
+
+  await writeConfigFile();
 };
 
-export const deleteModel = async (id: string) => {
-  const config = await readConfigFile();
-  config.models = config.models.filter((model) => model.id !== id);
-  await writeConfigFile(config);
+export const deleteModel = async (name: string) => {
+  // Deletes from both so I don't need to pass in the type
+  CURRENT_CONFIGURATION.llms = CURRENT_CONFIGURATION.llms.filter(
+    (model) => model.name !== name
+  );
+  CURRENT_CONFIGURATION.diffusors = CURRENT_CONFIGURATION.diffusors.filter(
+    (model) => model.name !== name
+  );
+
+  await writeConfigFile();
+};
+
+let PORT = 4000;
+export const RESERVED_PORTS = new Set();
+const getNextPort = (): number => {
+  const newPort = PORT++;
+  if (RESERVED_PORTS.has(newPort)) {
+    return getNextPort();
+  } else {
+    return newPort;
+  }
 };
 
 // Model-GPU Assignments
-export const createAssignment = async (modelId: string, gpuId: string) => {
-  const config = await readConfigFile();
-  const model = config.models.find((model) => model.id === modelId);
-  if (model) {
-    model.gpuIds = model.gpuIds || [];
-    model.gpuIds.push(gpuId);
-    await writeConfigFile(config);
-  }
+export const createAssignment = async (
+  modelName: string,
+  gpuIds: string[],
+  name: string
+) => {
+  const newAssignment = {
+    id: generateUUID(),
+    name,
+    modelName,
+    gpuIds,
+    port: getNextPort(),
+  };
+
+  CURRENT_CONFIGURATION.assignments.push(newAssignment);
+
+  await writeConfigFile();
 };
 
-export const deleteAssignment = async (modelId: string, gpuId: string) => {
-  const config = await readConfigFile();
-  const model = config.models.find((model) => model.id === modelId);
-  if (model && model.gpuIds) {
-    model.gpuIds = model.gpuIds.filter((id) => id !== gpuId);
-    await writeConfigFile(config);
-  }
+export const deleteAssignment = async (id: string) => {
+  CURRENT_CONFIGURATION.assignments = CURRENT_CONFIGURATION.assignments.filter(
+    (assignment) => assignment.id !== id
+  );
+  await writeConfigFile();
 };
