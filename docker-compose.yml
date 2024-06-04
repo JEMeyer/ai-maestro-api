@@ -4,3 +4,5 @@ services:
     ports:
       - '11434:11434'
       - '3000:3000'
+    volumes:
+      - ./data:/app/data

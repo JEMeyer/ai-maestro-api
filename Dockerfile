@@ -28,6 +28,9 @@ FROM base
 # Set the working directory inside the container
 WORKDIR /app
 
+# Create data directory for config files
+RUN mkdir -p /app/data
+
 # Copy the package.json and package-lock.json files from the builder image
 COPY --from=builder /app/package*.json ./
 

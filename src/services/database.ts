@@ -1,7 +1,10 @@
 import fs from 'fs/promises';
 import { generateUUID } from '../utilities/uuid';
 
-const filePath = './config.json';
+const defaultDirPath = '/app/data';
+const dataDir = process.env.DATA_DIR ? process.env.DATA_DIR.trim() : '';
+const dirPath = dataDir !== '' ? dataDir : defaultDirPath;
+const filePath = `${dirPath}/config.json`;
 
 interface Computer {
   id: string;
