@@ -1,4 +1,7 @@
 import * as childProcess from 'child_process';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 // Start the proxy server
 const proxyProcess = childProcess.spawn('node', ['dist/proxy.js'], {

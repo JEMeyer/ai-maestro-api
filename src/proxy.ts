@@ -6,7 +6,12 @@ import {
 } from 'http-proxy-middleware';
 import { Compute } from './utilities/computeStatus';
 import { IncomingMessage } from 'http';
-import { reserveGPU } from './utilities/configuration';
+import { loadModelMapFromFile, reserveGPU } from './utilities/configuration';
+import { loadConfigFile } from './services/database';
+
+// Updates local copy of config
+loadConfigFile();
+loadModelMapFromFile();
 
 const app = express();
 
@@ -27,7 +32,9 @@ const modelRouter = (req: IncomingMessage) => {
     }, 300);
   }
 
-  return targetServer;
+  console.log(`${targetServer}${expressReq.originalUrl}`);
+
+  return `${targetServer}${expressReq.originalUrl}`;
 };
 
 const handleResponse = async (responseBuffer: any, proxyRes: any) => {

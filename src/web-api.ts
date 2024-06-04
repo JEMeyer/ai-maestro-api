@@ -9,16 +9,20 @@ import {
   deleteGPU,
   deleteModel,
   getCurrentConfig,
-  readConfigFile,
+  loadConfigFile,
 } from './services/database';
-import { updateModelToServerMapping } from './utilities/configuration';
+import {
+  loadModelMapFromFile,
+  updateModelToServerMapping,
+} from './utilities/configuration';
 import { loadModel, makeContainer, removeAllContainers } from './services/node';
 import { AxiosResponse } from 'axios';
 
-const app = express();
-
 // Updates local copy of config
-readConfigFile();
+loadConfigFile();
+loadModelMapFromFile();
+
+const app = express();
 
 // Middleware to parse JSON bodies
 app.use(express.json());
@@ -30,7 +34,8 @@ app.get('/api/config', (req, res) => {
 });
 
 app.post('/api/config', async (req, res) => {
-  const config = await readConfigFile();
+  await loadConfigFile();
+  const config = getCurrentConfig();
 
   res.json(config);
 });
@@ -94,7 +99,8 @@ app.post('/api/refresh-proxy-mapping', async (_req, res) => {
 });
 
 app.post('/api/ensure-containers', async (req, res) => {
-  const { computers, gpus, diffusors, assignments } = await readConfigFile();
+  await loadConfigFile();
+  const { computers, gpus, diffusors, assignments } = getCurrentConfig();
 
   // First down all the containers, then re-make the ones we want
   computers.forEach(async (computer) => {

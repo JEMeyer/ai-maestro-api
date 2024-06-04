@@ -1,4 +1,4 @@
-import fs from 'fs/promises';
+import { readFile, writeFile } from 'fs/promises';
 import { generateUUID } from '../utilities/uuid';
 
 const defaultDirPath = '/app/data';
@@ -86,9 +86,9 @@ export const getCurrentConfig = () => {
   return Object.freeze({ ...CURRENT_CONFIGURATION });
 };
 
-export const readConfigFile = async (): Promise<Configuration> => {
+export const loadConfigFile = async (): Promise<Configuration> => {
   try {
-    const data = await fs.readFile(filePath, 'utf8');
+    const data = await readFile(filePath, 'utf8');
     const config = JSON.parse(data);
     CURRENT_CONFIGURATION = config;
     return config;
@@ -112,7 +112,7 @@ export const readConfigFile = async (): Promise<Configuration> => {
 
 async function writeConfigFile() {
   try {
-    await fs.writeFile(
+    await writeFile(
       filePath,
       JSON.stringify(CURRENT_CONFIGURATION, null, 2),
       'utf8'
