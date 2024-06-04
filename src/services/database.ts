@@ -52,7 +52,7 @@ let CURRENT_CONFIGURATION: Configuration = {
 export const extractIpAddressAndPort = (
   url: string
 ): [string, number] | null => {
-  const regex = /http:\/\/([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+):(\d+)/;
+  const regex = /(?:https?:\/\/)?(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):(\d+)/;
   const match = url.match(regex);
   if (match && match[1] && match[2]) {
     return [match[1], parseInt(match[2], 10)];
