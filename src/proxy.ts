@@ -32,8 +32,6 @@ const modelRouter = (req: IncomingMessage) => {
     }, 300);
   }
 
-  console.log(`${targetServer}${expressReq.originalUrl}`);
-
   return `${targetServer}${expressReq.originalUrl}`;
 };
 

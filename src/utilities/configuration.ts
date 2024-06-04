@@ -23,17 +23,13 @@ export const updateModelToServerMapping = async () => {
 
     // Loop through each assignment in the fetched configuration
     for (const assignment of config.assignments) {
-      console.log(assignment);
       const path = getPathFromAssignment(assignment);
-      console.log(path);
 
       // Initialize the array if it doesn't exist yet
       if (!pathMap[assignment.modelName]) pathMap[assignment.modelName] = [];
 
       // Add the created full path to the array associated with the model name in the MODEL_TO_PATH_MAP object
       pathMap[assignment.modelName].push(path);
-
-      console.log(pathMap);
     }
 
     // Sort in descending order. Higher priority comes first
@@ -85,12 +81,8 @@ export const loadModelMapFromFile = async () => {
  * @returns {string | undefined} - The address of the reserved server if available; otherwise, undefined.
  */
 export const reserveGPU = (modelName: string) => {
-  console.log(MODEL_TO_PATH_MAP);
-  console.log(modelName);
   // Get model gpuIds we can use
   const paths = MODEL_TO_PATH_MAP[modelName] ?? [];
-
-  console.log(paths);
 
   // Loop and find the first one that is free, otherwise return undefined
   for (const path of paths) {
