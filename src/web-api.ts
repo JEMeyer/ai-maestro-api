@@ -42,8 +42,8 @@ app.delete('/api/computers/:id', async (req, res) => {
 
 // GPUs
 app.post('/api/gpus', async (req, res) => {
-  const { name, vramSize, computerId } = req.body;
-  const id = await createGPU(name, vramSize, computerId);
+  const { name, vramSize, computerId, weight } = req.body;
+  const id = await createGPU(name, vramSize, computerId, weight);
   res.json({ id });
 });
 
