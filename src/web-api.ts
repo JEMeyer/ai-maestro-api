@@ -20,9 +20,14 @@ const app = express();
 // Middleware to parse JSON bodies
 app.use(express.json());
 
-app.get('/api/config', async (req, res) => {
-  const { fromFile }: { fromFile: boolean } = req.body;
-  const config = fromFile ? await readConfigFile() : getCurrentConfig();
+app.get('/api/config', (req, res) => {
+  const config = getCurrentConfig();
+
+  res.json(config);
+});
+
+app.post('/api/config', async (req, res) => {
+  const config = await readConfigFile();
 
   res.json(config);
 });
