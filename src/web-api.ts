@@ -17,6 +17,9 @@ import { AxiosResponse } from 'axios';
 
 const app = express();
 
+// Updates local copy of config
+readConfigFile();
+
 // Middleware to parse JSON bodies
 app.use(express.json());
 
