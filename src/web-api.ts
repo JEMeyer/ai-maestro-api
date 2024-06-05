@@ -1,106 +1,40 @@
 import express from 'express';
 import {
-  createAssignment,
   createComputer,
-  createGPU,
-  createModel,
-  deleteAssignment,
   deleteComputer,
-  deleteGPU,
-  deleteModel,
-  getCurrentConfig,
-  loadConfigFile,
-} from './services/database';
+  getAllComputers,
+} from './services/tables/computers';
+import { createGPU, deleteGPU, getAllGPUs } from './services/tables/gpus';
 import {
-  loadModelMapFromFile,
-  updateModelToServerMapping,
-} from './utilities/configuration';
-import { loadModel, makeContainer, removeAllContainers } from './services/node';
-import { AxiosResponse } from 'axios';
-
-// Updates local copy of config
-loadConfigFile();
-loadModelMapFromFile();
+  createAssignment,
+  deleteAssignment,
+  getAllAssignments,
+} from './services/tables/assignments';
+import { createLLM, deleteLLM } from './services/tables/llms';
+import {
+  createDiffusor,
+  deleteDiffusor,
+  getAllDiffusors,
+} from './services/tables/diffusors';
+import {
+  createSpeechModel,
+  deleteSpeechModel,
+} from './services/tables/speechModels';
+import { loadModel, makeContainer, removeAllContainers } from './services/edge';
+import { createAssignmentGPU } from './services/tables/assignmentGpus';
 
 const app = express();
 
 // Middleware to parse JSON bodies
 app.use(express.json());
 
-app.get('/api/config', (req, res) => {
-  const config = getCurrentConfig();
-
-  res.json(config);
-});
-
-app.post('/api/config', async (req, res) => {
-  await loadConfigFile();
-  const config = getCurrentConfig();
-
-  res.json(config);
-});
-
-// Computers
-app.post('/api/computers', async (req, res) => {
-  const { name, ipAddr } = req.body;
-  const id = await createComputer(name, ipAddr);
-  res.json({ id });
-});
-
-app.delete('/api/computers/:id', async (req, res) => {
-  const { id } = req.params;
-  await deleteComputer(id);
-  res.sendStatus(204); // No Content
-});
-
-// GPUs
-app.post('/api/gpus', async (req, res) => {
-  const { name, vramSize, computerId, weight } = req.body;
-  const id = await createGPU(name, vramSize, computerId, weight);
-  res.json({ id });
-});
-
-app.delete('/api/gpus/:id', async (req, res) => {
-  const { id } = req.params;
-  await deleteGPU(id);
-  res.sendStatus(204);
-});
-
-// Models
-app.post('/api/models', async (req, res) => {
-  const { name, size, type } = req.body;
-  const id = await createModel(name, size, type);
-  res.json({ id });
-});
-
-app.delete('/api/models/:name', async (req, res) => {
-  const { name } = req.params;
-  await deleteModel(name);
-  res.sendStatus(204);
-});
-
-// Model-GPU Assignments
-app.post('/api/assignments', async (req, res) => {
-  const { model, gpuId, name } = req.body;
-  await createAssignment(model, gpuId, name);
-  res.sendStatus(201); // Created
-});
-
-app.delete('/api/assignments/:id', async (req, res) => {
-  const { id } = req.body;
-  await deleteAssignment(id);
-  res.sendStatus(204);
-});
-
-// Refresh the mapping in the proxy server - will start routing to the mapping immediately
-app.post('/api/refresh-proxy-mapping', async (_req, res) => {
-  await updateModelToServerMapping();
-  res.sendStatus(200);
-});
-
 app.post('/api/ensure-containers', async (req, res) => {
-  await loadConfigFile();
-  const { computers, gpus, diffusors, assignments } = getCurrentConfig();
+  const [computers, gpus, diffusors, assignments] = await Promise.all([
+    getAllComputers(),
+    getAllGPUs(),
+    getAllDiffusors(),
+    getAllAssignments(),
+  ]);
 
   // First down all the containers, then re-make the ones we want
   computers.forEach(async (computer) => {
@@ -108,7 +42,7 @@ app.post('/api/ensure-containers', async (req, res) => {
   });
 
   // Loop through each model, start the containers, load the model in each container
-  const makeAndLoadContainerPromises: Promise<AxiosResponse>[] = [];
+  const makeAndLoadContainerPromises: Promise<Response>[] = [];
   assignments.forEach(async (assignment) => {
     const ipAddr = computers.find(({ id }) => {
       return id === gpus[0].computerId;
@@ -138,6 +72,99 @@ app.post('/api/ensure-containers', async (req, res) => {
   await Promise.all(makeAndLoadContainerPromises);
 
   res.sendStatus(200);
+});
+
+// Computers
+app.post('/api/computers', async (req, res) => {
+  const { name, ipAddr } = req.body;
+  const id = await createComputer(name, ipAddr);
+  res.json({ id });
+});
+
+app.delete('/api/computers/:id', async (req, res) => {
+  const { id } = req.params;
+  await deleteComputer(Number(id));
+  res.sendStatus(204);
+});
+
+// GPUs
+app.post('/api/gpus', async (req, res) => {
+  const { name, vramSize, computerId, weight } = req.body;
+  const id = await createGPU(name, vramSize, computerId, weight);
+  res.json({ id });
+});
+
+app.delete('/api/gpus/:id', async (req, res) => {
+  const { id } = req.params;
+  await deleteGPU(Number(id));
+  res.sendStatus(204);
+});
+
+// Models
+app.post('/api/models', async (req, res) => {
+  const { name, size, type } = req.body;
+
+  let id;
+  switch (type) {
+    case 'llm':
+      id = await createLLM(name, size);
+      break;
+    case 'diffusor':
+      id = await createDiffusor(name, size);
+      break;
+    case 'stt':
+    case 'tts':
+      id = await createSpeechModel(name, size, type);
+      break;
+    default:
+      res.status(400).json({ error: 'Invalid data/payload' });
+      return;
+  }
+
+  res.json({ id });
+});
+
+app.delete('/api/models/:name', async (req, res) => {
+  const { name } = req.params;
+  const { type } = req.query;
+
+  switch (type) {
+    case 'llm':
+      await deleteLLM(name);
+      break;
+    case 'diffusor':
+      await deleteDiffusor(name);
+      break;
+    case 'stt':
+    case 'tts':
+      await deleteSpeechModel(name);
+      break;
+    default:
+      res.status(400).json({ error: 'Invalid data/payload' });
+      return;
+  }
+  res.sendStatus(204);
+});
+
+// Assignments
+app.post('/api/assignments', async (req, res) => {
+  const { model, gpuIds, name } = req.body as {
+    model: string;
+    gpuIds: number[];
+    name: string;
+  };
+  const port = 1;
+  const assignmentId = await createAssignment(name, model, port);
+  await Promise.all([
+    gpuIds.map((gpuId) => createAssignmentGPU(assignmentId, gpuId)),
+  ]);
+  res.sendStatus(201);
+});
+
+app.delete('/api/assignments/:id', async (req, res) => {
+  const { id } = req.body;
+  await deleteAssignment(id);
+  res.sendStatus(204);
 });
 
 // Start server

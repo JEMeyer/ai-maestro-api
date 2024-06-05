@@ -1,5 +1,4 @@
-import axios from 'axios';
-import * as cheerio from 'cheerio';
+import { load } from 'cheerio';
 import { writeFileSync } from 'fs';
 
 const modelNames = []; // Put any models missing sizes here
@@ -7,31 +6,34 @@ const modelNames = []; // Put any models missing sizes here
 const scrapeModelSize = async (modelName: string) => {
   try {
     // Fetch the HTML content of the model page
-    const { data } = await axios.get(`https://ollama.com/library/${modelName}`);
+    const response = await fetch(`https://ollama.com/library/${modelName}`);
+    if (response.ok) {
+      const htmlContent = await response.text();
+      const $ = load(htmlContent);
 
-    // Load the HTML content into Cheerio
-    const $ = cheerio.load(data);
+      // Define a variable to hold the model size
+      let modelSize = 0;
 
-    // Define a variable to hold the model size
-    let modelSize = 0;
+      // Select the element that contains the model size
+      const sizeText = $(
+        '.px-4.py-3.bg-neutral-50.flex.justify-between.items-center.text-xs.text-neutral-900 p'
+      )
+        .last()
+        .text()
+        .trim();
 
-    // Select the element that contains the model size
-    const sizeText = $(
-      '.px-4.py-3.bg-neutral-50.flex.justify-between.items-center.text-xs.text-neutral-900 p'
-    )
-      .last()
-      .text()
-      .trim();
+      // Extract the size value and convert to GB if necessary
+      const sizeMatch = sizeText.match(/(\d+(\.\d+)?)(GB|MB)/);
+      if (sizeMatch) {
+        const sizeValue = parseFloat(sizeMatch[1]);
+        const sizeUnit = sizeMatch[3];
+        modelSize = sizeUnit === 'GB' ? sizeValue : sizeValue / 1000;
+      }
 
-    // Extract the size value and convert to GB if necessary
-    const sizeMatch = sizeText.match(/(\d+(\.\d+)?)(GB|MB)/);
-    if (sizeMatch) {
-      const sizeValue = parseFloat(sizeMatch[1]);
-      const sizeUnit = sizeMatch[3];
-      modelSize = sizeUnit === 'GB' ? sizeValue : sizeValue / 1000;
+      return { modelName, modelSize };
+    } else {
+      throw new Error('Failed to fetch the model data.');
     }
-
-    return { modelName, modelSize };
   } catch (error) {
     console.error(
       `Error fetching or parsing the page for model ${modelName}:`,

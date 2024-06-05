@@ -1,4 +1,4 @@
-# llm-manager
+# ai-maestro-api
 
 Orchestrates setting up ollama docker containers and queueing requests to ensure 1 request per gpu.
 
