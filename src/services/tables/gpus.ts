@@ -23,7 +23,7 @@ export const createGPU = async (
     computerId,
     weight || null,
   ]);
-  return result[0].insertId;
+  return Number(result[0].insertId);
 };
 
 // Read all GPUs
@@ -57,12 +57,12 @@ export const updateGPU = async (
     weight || null,
     id,
   ]);
-  return result[0].affectedRows;
+  return Number(result[0].affectedRows);
 };
 
 // Delete a GPU
 export const deleteGPU = async (id: number): Promise<number> => {
   const query = 'DELETE FROM gpus WHERE id = ?';
   const result = await pool.query(query, [id]);
-  return result[0].affectedRows;
+  return Number(result[0].affectedRows);
 };

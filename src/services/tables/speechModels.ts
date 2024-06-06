@@ -10,7 +10,7 @@ export const createSpeechModel = async (
   const query =
     'INSERT INTO speech_models (name, size, model_type) VALUES (?, ?, ?)';
   const result = await pool.query(query, [name, size, type]);
-  return result.affectedRows;
+  return Number(result.affectedRows);
 };
 
 // Read all SpeechModels
@@ -36,12 +36,12 @@ export const updateSpeechModel = async (
 ): Promise<number> => {
   const query = 'UPDATE speech_models SET size = ? WHERE name = ?';
   const result = await pool.query(query, [size, name]);
-  return result.affectedRows;
+  return Number(result.affectedRows);
 };
 
 // Delete a SpeechModel
 export const deleteSpeechModel = async (name: string): Promise<number> => {
   const query = 'DELETE FROM speech_models WHERE name = ?';
   const result = await pool.query(query, [name]);
-  return result.affectedRows;
+  return Number(result.affectedRows);
 };

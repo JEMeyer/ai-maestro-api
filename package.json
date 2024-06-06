@@ -2,17 +2,18 @@
   "name": "ai-maestro-api",
   "version": "1.0.0",
   "description": "REST api to control llm docker containers",
-  "main": "main.js",
+  "main": "web-api.js",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/main.js",
-    "dev": "tsc --watch & node dist/main.js",
+    "start": "node dist/web-api.js",
+    "dev": "tsc --watch & node dist/web-api.js",
     "lint": "eslint --fix \"src/**/*.ts\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Joe Meyer",
   "dependencies": {
     "cheerio": "^1.0.0-rc.12",
+    "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "mariadb": "^3.3.0"
   },

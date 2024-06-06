@@ -8,7 +8,7 @@ export const createLLM = async (
 ): Promise<number> => {
   const query = 'INSERT INTO llms (name, size) VALUES (?, ?)';
   const result = await pool.query(query, [name, size]);
-  return result.affectedRows;
+  return Number(result.affectedRows);
 };
 
 // Read all LLMs
@@ -32,12 +32,12 @@ export const updateLLM = async (
 ): Promise<number> => {
   const query = 'UPDATE llms SET size = ? WHERE name = ?';
   const result = await pool.query(query, [size, name]);
-  return result.affectedRows;
+  return Number(result.affectedRows);
 };
 
 // Delete an LLM
 export const deleteLLM = async (name: string): Promise<number> => {
   const query = 'DELETE FROM llms WHERE name = ?';
   const result = await pool.query(query, [name]);
-  return result.affectedRows;
+  return Number(result.affectedRows);
 };

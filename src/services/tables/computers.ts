@@ -8,7 +8,7 @@ export const createComputer = async (
 ): Promise<number> => {
   const query = 'INSERT INTO computers (name, ip_addr) VALUES (?, ?)';
   const result = await pool.query(query, [name, ipAddr]);
-  return result.insertId;
+  return Number(result.insertId);
 };
 
 // Read all computers
@@ -33,12 +33,12 @@ export const updateComputer = async (
 ): Promise<number> => {
   const query = 'UPDATE computers SET name = ?, ip_addr = ? WHERE id = ?';
   const result = await pool.query(query, [name, ipAddr, id]);
-  return result.affectedRows;
+  return Number(result.affectedRows);
 };
 
 // Delete a computer
 export const deleteComputer = async (id: number): Promise<number> => {
   const query = 'DELETE FROM computers WHERE id = ?';
   const result = await pool.query(query, [id]);
-  return result.affectedRows;
+  return Number(result.affectedRows);
 };

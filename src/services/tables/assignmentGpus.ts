@@ -9,7 +9,7 @@ export const createAssignmentGPU = async (
   const query =
     'INSERT INTO assignment_gpus (assignment_id, gpu_id) VALUES (?, ?)';
   const result = await pool.query(query, [assignmentId, gpuId]);
-  return result.affectedRows;
+  return Number(result.affectedRows);
 };
 
 // Read all Assignment-GPU mappings
@@ -36,5 +36,5 @@ export const deleteAssignmentGPU = async (
   const query =
     'DELETE FROM assignment_gpus WHERE assignment_id = ? AND gpu_id = ?';
   const result = await pool.query(query, [assignmentId, gpuId]);
-  return result.affectedRows;
+  return Number(result.affectedRows);
 };

@@ -8,7 +8,7 @@ export const createDiffusor = async (
 ): Promise<number> => {
   const query = 'INSERT INTO diffusors (name, size) VALUES (?, ?)';
   const result = await pool.query(query, [name, size]);
-  return result.affectedRows;
+  return Number(result.affectedRows);
 };
 
 // Read all Diffusors
@@ -34,12 +34,12 @@ export const updateDiffusor = async (
 ): Promise<number> => {
   const query = 'UPDATE diffusors SET size = ? WHERE name = ?';
   const result = await pool.query(query, [size, name]);
-  return result.affectedRows;
+  return Number(result.affectedRows);
 };
 
 // Delete a Diffusor
 export const deleteDiffusor = async (name: string): Promise<number> => {
   const query = 'DELETE FROM diffusors WHERE name = ?';
   const result = await pool.query(query, [name]);
-  return result.affectedRows;
+  return Number(result.affectedRows);
 };

@@ -5,4 +5,5 @@ export const pool: Pool = createPool({
   user: process.env.SQL_USER,
   password: process.env.SQL_PW,
   database: process.env.SQL_DB,
+  allowPublicKeyRetrieval: true,
 });

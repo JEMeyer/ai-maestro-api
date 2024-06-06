@@ -1,27 +1,20 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express from 'express';
-import {
-  createComputer,
-  deleteComputer,
-  getAllComputers,
-} from './services/tables/computers';
-import { createGPU, deleteGPU, getAllGPUs } from './services/tables/gpus';
+import { getAllComputers } from './services/tables/computers';
+import { getAllGPUs } from './services/tables/gpus';
 import {
   createAssignment,
   deleteAssignment,
   getAllAssignments,
 } from './services/tables/assignments';
-import { createLLM, deleteLLM } from './services/tables/llms';
-import {
-  createDiffusor,
-  deleteDiffusor,
-  getAllDiffusors,
-} from './services/tables/diffusors';
-import {
-  createSpeechModel,
-  deleteSpeechModel,
-} from './services/tables/speechModels';
+import { getAllDiffusors } from './services/tables/diffusors';
 import { loadModel, makeContainer, removeAllContainers } from './services/edge';
 import { createAssignmentGPU } from './services/tables/assignmentGpus';
+import computersRouter from './routes/computers';
+import gpusRouter from './routes/computers';
+import modelsRouter from './routes/models';
 
 const app = express();
 
@@ -74,77 +67,9 @@ app.post('/api/ensure-containers', async (req, res) => {
   res.sendStatus(200);
 });
 
-// Computers
-app.post('/api/computers', async (req, res) => {
-  const { name, ipAddr } = req.body;
-  const id = await createComputer(name, ipAddr);
-  res.json({ id });
-});
-
-app.delete('/api/computers/:id', async (req, res) => {
-  const { id } = req.params;
-  await deleteComputer(Number(id));
-  res.sendStatus(204);
-});
-
-// GPUs
-app.post('/api/gpus', async (req, res) => {
-  const { name, vramSize, computerId, weight } = req.body;
-  const id = await createGPU(name, vramSize, computerId, weight);
-  res.json({ id });
-});
-
-app.delete('/api/gpus/:id', async (req, res) => {
-  const { id } = req.params;
-  await deleteGPU(Number(id));
-  res.sendStatus(204);
-});
-
-// Models
-app.post('/api/models', async (req, res) => {
-  const { name, size, type } = req.body;
-
-  let id;
-  switch (type) {
-    case 'llm':
-      id = await createLLM(name, size);
-      break;
-    case 'diffusor':
-      id = await createDiffusor(name, size);
-      break;
-    case 'stt':
-    case 'tts':
-      id = await createSpeechModel(name, size, type);
-      break;
-    default:
-      res.status(400).json({ error: 'Invalid data/payload' });
-      return;
-  }
-
-  res.json({ id });
-});
-
-app.delete('/api/models/:name', async (req, res) => {
-  const { name } = req.params;
-  const { type } = req.query;
-
-  switch (type) {
-    case 'llm':
-      await deleteLLM(name);
-      break;
-    case 'diffusor':
-      await deleteDiffusor(name);
-      break;
-    case 'stt':
-    case 'tts':
-      await deleteSpeechModel(name);
-      break;
-    default:
-      res.status(400).json({ error: 'Invalid data/payload' });
-      return;
-  }
-  res.sendStatus(204);
-});
+app.use('/api/computers', computersRouter);
+app.use('/api/gpus', gpusRouter);
+app.use('/api/models', modelsRouter);
 
 // Assignments
 app.post('/api/assignments', async (req, res) => {

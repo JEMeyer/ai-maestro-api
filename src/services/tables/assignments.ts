@@ -10,7 +10,7 @@ export const createAssignment = async (
   const query =
     'INSERT INTO assignments (name, model_name, port) VALUES (?, ?, ?)';
   const result = await pool.query(query, [name, modelName, port]);
-  return result.insertId;
+  return Number(result.insertId);
 };
 
 // Read all Assignments
@@ -39,12 +39,12 @@ export const updateAssignment = async (
   const query =
     'UPDATE assignments SET name = ?, model_name = ?, port = ? WHERE id = ?';
   const result = await pool.query(query, [name, modelName, port, id]);
-  return result.affectedRows;
+  return Number(result.affectedRows);
 };
 
 // Delete an Assignment
 export const deleteAssignment = async (id: number): Promise<number> => {
   const query = 'DELETE FROM assignments WHERE id = ?';
   const result = await pool.query(query, [id]);
-  return result.affectedRows;
+  return Number(result.affectedRows);
 };
