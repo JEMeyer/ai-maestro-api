@@ -2,13 +2,13 @@ interface MakeContainerProps {
   containerName: string;
   port: string;
   gpuIds: string[];
-  diffusionModel?: string;
+  diffusionModel?: string; // 'sdxl-turbo' or 'sd-turbo'
 }
 
 interface LoadModelProps {
   modelName: string;
   containerName: string;
-  port?: number; // used for SD
+  mode?: string; // Mode is 'diffusion' vs anything else
 }
 
 export const makeContainer = async (
@@ -28,9 +28,10 @@ export const makeContainer = async (
   return response;
 };
 
+// Mode is 'diffusion' vs anything else
 export const removeContainer = async (
   ipAddr: string,
-  props: { containerName: string; mode: string }
+  props: { containerName: string; mode: 'diffusion' }
 ): Promise<Response> => {
   const response = await fetch(
     `${ipAddr}:${process.env.EDGE_SERVER_PORT}/down-container`,
