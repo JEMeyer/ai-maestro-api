@@ -24,3 +24,13 @@ export const deleteComputer = async (req: Request, res: Response) => {
   await ComputerService.deleteComputer(Number(id));
   res.sendStatus(204);
 };
+
+export const updateputer = async (req: Request, res: Response) => {
+  const { id, name, ipAddr } = req.body;
+  const affectedRows = await ComputerService.updateComputer(
+    Number(id),
+    name,
+    ipAddr
+  );
+  res.json({ affectedRows });
+};

@@ -1,20 +1,46 @@
 import { Request, Response } from 'express';
-import { createLLM, deleteLLM } from '../services/tables/llms';
-import { createDiffusor, deleteDiffusor } from '../services/tables/diffusors';
-import {
-  createSpeechModel,
-  deleteSpeechModel,
-} from '../services/tables/speechModels';
+import * as LlmService from '../services/tables/llms';
+import * as DiffusorService from '../services/tables/diffusors';
+import * as SpeechModelService from '../services/tables/speechModels';
+import { Model } from '../services/tables/types';
 
-export const getAllComputers = async (_req: Request, res: Response) => {
-  const computers = await ComputerService.getAllComputers();
-  res.json(computers);
+export const getAllModels = async (_req: Request, res: Response) => {
+  const [llmModels, diffusorModels, speechModels] = await Promise.all([
+    LlmService.getAllLLMs(),
+    DiffusorService.getAllDiffusors(),
+    SpeechModelService.getAllSpeechModels(),
+  ]);
+
+  const models = [...llmModels, ...diffusorModels, ...speechModels];
+
+  res.json(models);
 };
 
 export const getModelByName = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const computer = await ComputerService.getComputerById(Number(id));
-  if (computer != null) res.json(computer);
+  const { name } = req.params;
+  const { type } = req.query;
+
+  let model: Model | undefined | null;
+
+  switch (type) {
+    case 'llm':
+      model = await LlmService.getLLMByName(name);
+      break;
+    case 'diffusor':
+      model = await DiffusorService.getDiffusorByName(name);
+      break;
+    case 'stt':
+    case 'tts':
+      model = await SpeechModelService.getSpeechModelByName(name);
+      break;
+    default:
+      res
+        .status(400)
+        .json({ error: 'Invalid data/payload - missing or invalid "type"' });
+      return;
+  }
+
+  if (model != null) res.json(model);
   else res.sendStatus(404);
 };
 
@@ -24,14 +50,14 @@ export const createModel = async (req: Request, res: Response) => {
   let id;
   switch (type) {
     case 'llm':
-      id = await createLLM(name, size);
+      id = await LlmService.createLLM(name, size);
       break;
     case 'diffusor':
-      id = await createDiffusor(name, size);
+      id = await DiffusorService.createDiffusor(name, size);
       break;
     case 'stt':
     case 'tts':
-      id = await createSpeechModel(name, size, type);
+      id = await SpeechModelService.createSpeechModel(name, size, type);
       break;
     default:
       res.status(400).json({ error: 'Invalid data/payload' });
@@ -41,20 +67,20 @@ export const createModel = async (req: Request, res: Response) => {
   res.json({ id });
 };
 
-export const deleteComputer = async (req: Request, res: Response) => {
+export const deleteModel = async (req: Request, res: Response) => {
   const { name } = req.params;
   const { type } = req.query;
 
   switch (type) {
     case 'llm':
-      await deleteLLM(name);
+      await LlmService.deleteLLM(name);
       break;
     case 'diffusor':
-      await deleteDiffusor(name);
+      await DiffusorService.deleteDiffusor(name);
       break;
     case 'stt':
     case 'tts':
-      await deleteSpeechModel(name);
+      await SpeechModelService.deleteSpeechModel(name);
       break;
     default:
       res.status(400).json({ error: 'Invalid data/payload' });

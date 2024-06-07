@@ -24,3 +24,10 @@ export const deleteGPU = async (req: Request, res: Response) => {
   await GpuService.deleteGPU(Number(id));
   res.sendStatus(204);
 };
+
+export const updateGPU = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { name, vramSize, computerId, weight } = req.body;
+  await GpuService.updateGPU(Number(id), name, vramSize, computerId, weight);
+  res.sendStatus(204);
+};

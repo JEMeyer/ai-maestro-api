@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import * as AssignmentService from '../services/tables/assignments';
+import * as AssignmentGpuService from '../services/tables/assignmentGpus';
 import * as DiffusorService from '../services/tables/diffusors';
 import * as GpuService from '../services/tables/gpus';
 import * as ComputerService from '../services/tables/computers';
@@ -17,16 +18,55 @@ export const getAssignmentById = async (req: Request, res: Response) => {
   else res.sendStatus(404);
 };
 
-export const createtAssignment = async (req: Request, res: Response) => {
-  const { name, modelName, port } = req.body;
-  const id = await AssignmentService.createAssignment(name, modelName, port);
-  res.json({ id });
+export const createAssignment = async (req: Request, res: Response) => {
+  const { name, modelName, port, gpuIds } = req.body as {
+    name: string;
+    modelName: string;
+    port: number;
+    gpuIds: number[];
+  };
+  const assignmentId = await AssignmentService.createAssignment(
+    name,
+    modelName,
+    port
+  );
+  await Promise.all(
+    gpuIds.map((gpuId) =>
+      AssignmentGpuService.createAssignmentGPU(assignmentId, gpuId)
+    )
+  );
+  res.json({ assignmentId });
 };
 
 export const deleteAssignment = async (req: Request, res: Response) => {
   const { id } = req.params;
   await AssignmentService.deleteAssignment(Number(id));
+  await AssignmentGpuService.deleteAssignmentGPUsByAssignmentId(Number(id));
   res.sendStatus(204);
+};
+
+export const updateAssignment = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { name, modelName, port, gpuIds } = req.body;
+  const [affectedARows, currentAssignmentGpus] = await Promise.all([
+    AssignmentService.updateAssignment(Number(id), name, modelName, port),
+    AssignmentGpuService.getAssignmentGPUsByAssignmentId(Number(id)),
+  ]);
+  await Promise.all(
+    (gpuIds as number[])
+      .map((gpuId) => {
+        if (!currentAssignmentGpus.find((ag) => ag.gpuId === gpuId)) {
+          return AssignmentGpuService.createAssignmentGPU(Number(id), gpuId);
+        }
+      })
+      .filter(Boolean).concat(
+  currentAssignmentGpus.map((ag) => {
+    if (!(gpuIds as number[]).find((gpuId) => ag.gpuId === gpuId)) {
+      return AssignmentGpuService.deleteAssignmentGpu(Number(id), ag.gpuId);
+    }
+  }).filter(Boolean);
+);
+  res.json({ affectedARows });
 };
 
 export const deployAssignments = async (req: Request, res: Response) => {

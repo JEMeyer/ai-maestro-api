@@ -31,7 +31,7 @@ export const makeContainer = async (
 // Mode is 'diffusion' vs anything else
 export const removeContainer = async (
   ipAddr: string,
-  props: { containerName: string; mode: 'diffusion' }
+  props: { containerName: string; mode: string }
 ): Promise<Response> => {
   const response = await fetch(
     `${ipAddr}:${process.env.EDGE_SERVER_PORT}/down-container`,

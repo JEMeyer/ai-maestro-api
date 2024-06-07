@@ -22,19 +22,28 @@ export const getAllAssignmentGPUs = async (): Promise<AssignmentGPU[]> => {
 // Read Assignment-GPU mappings by assignment id
 export const getAssignmentGPUsByAssignmentId = async (
   assignmentId: number
-): Promise<AssignmentGPU | null> => {
+): Promise<AssignmentGPU[]> => {
   const query = 'SELECT * FROM assignment_gpus WHERE assignment_id = ?';
   const [rows] = await pool.query(query, [assignmentId]);
   return rows;
 };
 
+// Delete Assignment-GPU mappings by assignment id
+export const deleteAssignmentGPUsByAssignmentId = async (
+  assignmentId: number
+): Promise<number> => {
+  const query = 'DELETE FROM assignment_gpus WHERE assignment_id = ?';
+  const result = await pool.query(query, [assignmentId]);
+  return Number(result.affectedRows);
+};
+
 // Delete an Assignment-GPU mapping
-export const deleteAssignmentGPU = async (
-  assignmentId: number,
-  gpuId: number
+export const deleteAssignmentGpu = async (
+  gpuId: number,
+  assignmentId: number
 ): Promise<number> => {
   const query =
-    'DELETE FROM assignment_gpus WHERE assignment_id = ? AND gpu_id = ?';
-  const result = await pool.query(query, [assignmentId, gpuId]);
+    'DELETE FROM assignment_gpus WHERE gpu_id = ? AND assignment_id = ?';
+  const result = await pool.query(query, [gpuId, assignmentId]);
   return Number(result.affectedRows);
 };
