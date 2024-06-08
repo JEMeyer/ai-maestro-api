@@ -47,25 +47,40 @@ export const deleteAssignment = async (req: Request, res: Response) => {
 
 export const updateAssignment = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { name, modelName, port, gpuIds } = req.body;
+  const { name, modelName, port, gpuIds } = req.body as {
+    name: string;
+    modelName: string;
+    port: number;
+    gpuIds: number[];
+  };
+
+  // First update the assignment record, and pull all current assignmentGpus
   const [affectedARows, currentAssignmentGpus] = await Promise.all([
     AssignmentService.updateAssignment(Number(id), name, modelName, port),
     AssignmentGpuService.getAssignmentGPUsByAssignmentId(Number(id)),
   ]);
+
+  // Now look to see which assignment gpus we need to delete/create
   await Promise.all(
-    (gpuIds as number[])
+    gpuIds
       .map((gpuId) => {
         if (!currentAssignmentGpus.find((ag) => ag.gpuId === gpuId)) {
           return AssignmentGpuService.createAssignmentGPU(Number(id), gpuId);
         }
       })
-      .filter(Boolean).concat(
-  currentAssignmentGpus.map((ag) => {
-    if (!(gpuIds as number[]).find((gpuId) => ag.gpuId === gpuId)) {
-      return AssignmentGpuService.deleteAssignmentGpu(Number(id), ag.gpuId);
-    }
-  }).filter(Boolean);
-);
+      .concat(
+        currentAssignmentGpus
+          .map((ag) => {
+            if (!gpuIds.find((gpuId) => ag.gpuId === gpuId)) {
+              return AssignmentGpuService.deleteAssignmentGpu(
+                Number(id),
+                ag.gpuId
+              );
+            }
+          })
+          .filter(Boolean)
+      )
+  );
   res.json({ affectedARows });
 };
 

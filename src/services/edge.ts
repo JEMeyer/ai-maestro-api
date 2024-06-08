@@ -77,3 +77,22 @@ export const loadModel = async (
   );
   return response;
 };
+
+export const getCurrentDockerContainers = async (ipAddr: string) => {
+  try {
+    const response = await fetch(
+      `${ipAddr}:${process.env.EDGE_SERVER_PORT}/get-current-containers`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.log('Error getting current docker containers');
+    throw error;
+  }
+};
