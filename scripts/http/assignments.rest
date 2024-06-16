@@ -7,6 +7,7 @@ GET {{baseUrl}}:{{port}}/api/assignments/1
 ### Create a new assignment
 POST {{baseUrl}}:{{port}}/api/assignments
 Content-Type: application/json
+
 {
   "name": "New Assignment",
   "modelName": "Model1",
@@ -23,6 +24,7 @@ POST {{baseUrl}}:{{port}}/api/assignments/deployAll
 ### Update an assignment
 PUT {{baseUrl}}:{{port}}/api/assignments/1
 Content-Type: application/json
+
 {
   "name": "Updated Assignment",
   "modelName": "Model2",

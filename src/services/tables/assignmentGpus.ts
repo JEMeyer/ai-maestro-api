@@ -9,7 +9,7 @@ export const createAssignmentGPU = async (
   const query =
     'INSERT INTO assignment_gpus (assignment_id, gpu_id) VALUES (?, ?)';
   const result = await pool.query(query, [assignmentId, gpuId]);
-  return Number(result.affectedRows);
+  return Number(result.insertId); // Should always be 0 due to joint key
 };
 
 // Read all Assignment-GPU mappings

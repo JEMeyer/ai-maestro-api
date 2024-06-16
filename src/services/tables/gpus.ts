@@ -23,7 +23,7 @@ export const createGPU = async (
     computerId,
     weight || null,
   ]);
-  return Number(result[0].insertId);
+  return Number(result.insertId);
 };
 
 // Read all GPUs

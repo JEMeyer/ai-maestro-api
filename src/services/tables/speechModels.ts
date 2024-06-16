@@ -10,7 +10,7 @@ export const createSpeechModel = async (
   const query =
     'INSERT INTO speech_models (name, size, model_type) VALUES (?, ?, ?)';
   const result = await pool.query(query, [name, size, type]);
-  return Number(result.affectedRows);
+  return Number(result.insertId);
 };
 
 // Read all SpeechModels

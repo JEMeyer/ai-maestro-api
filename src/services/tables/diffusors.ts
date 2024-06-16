@@ -8,7 +8,7 @@ export const createDiffusor = async (
 ): Promise<number> => {
   const query = 'INSERT INTO diffusors (name, size) VALUES (?, ?)';
   const result = await pool.query(query, [name, size]);
-  return Number(result.affectedRows);
+  return Number(result.insertId);
 };
 
 // Read all Diffusors
