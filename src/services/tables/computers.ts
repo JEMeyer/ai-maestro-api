@@ -31,13 +31,11 @@ export const getAllComputers = async (): Promise<Computer[]> => {
 
 // Read a computer by id
 export const getComputerById = async (id: number): Promise<Computer | null> => {
-  const query = 'SELECT * FROM computers WHERE id = ?';
-  const [rows] = await pool.query(query, [id]);
+  const query = 'SELECT * FROM computers WHERE id = ? LIMIT 1';
+  const [row] = await pool.query(query, [id]);
 
-  // Handle the case when the table is empty or has a single row
-  const row = rows.length > 0 ? rows[0] : null;
-
-  return row;
+  // If no row is found, row will be undefined
+  return row || null;
 };
 
 // Update a computer

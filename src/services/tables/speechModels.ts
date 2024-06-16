@@ -35,13 +35,11 @@ export const getAllSpeechModels = async (): Promise<Model[]> => {
 export const getSpeechModelByName = async (
   name: string
 ): Promise<Model | null> => {
-  const query = 'SELECT * FROM speech_models WHERE name = ?';
-  const [rows] = await pool.query(query, [name]);
+  const query = 'SELECT * FROM speech_models WHERE name = ? LIMIT 1';
+  const [row] = await pool.query(query, [name]);
 
-  // Handle the case when the table is empty or has a single row
-  const row = rows.length > 0 ? rows[0] : null;
-
-  return row;
+  // If no row is found, row will be undefined
+  return row || null;
 };
 
 // Update a SpeechModel
