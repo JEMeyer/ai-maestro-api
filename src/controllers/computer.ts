@@ -25,7 +25,7 @@ export const deleteComputer = async (req: Request, res: Response) => {
   res.sendStatus(204);
 };
 
-export const updateputer = async (req: Request, res: Response) => {
+export const updateComputer = async (req: Request, res: Response) => {
   const { id, name, ipAddr } = req.body;
   const affectedRows = await ComputerService.updateComputer(
     Number(id),

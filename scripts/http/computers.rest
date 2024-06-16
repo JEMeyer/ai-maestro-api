@@ -1,0 +1,26 @@
+### Get all computers
+GET {{baseUrl}}:{{port}}/api/computers
+
+### Get computer by ID
+GET {{baseUrl}}:{{port}}/api/computers/<ID>
+
+### Create a new computer
+POST {{baseUrl}}:{{port}}/api/computers
+Content-Type: application/json
+
+{
+  "name": "New Computer",
+  "ipAddr": "0.0.0.0",
+}
+
+### Delete an computer
+DELETE {{baseUrl}}:{{port}}/api/computers/<ID>
+
+### Update an computer
+PUT {{baseUrl}}:{{port}}/api/computers/<ID>
+Content-Type: application/json
+
+{
+  "name": "Updated Computer",
+  "ipAddr": "0.0.0.1",
+}

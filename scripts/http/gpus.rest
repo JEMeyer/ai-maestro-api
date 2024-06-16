@@ -1,0 +1,30 @@
+### Get all gpus
+GET {{baseUrl}}:{{port}}/api/gpus
+
+### Get gpu by id
+GET {{baseUrl}}:{{port}}/api/gpus/<ID>
+
+### Create a new gpu
+POST {{baseUrl}}:{{port}}/api/gpus
+Content-Type: application/json
+
+{
+  "name": "New GPU",
+  "vramSize": 4,
+  "computerId": 123,
+  "weight": 0.5
+}
+
+### Delete a gpu
+DELETE {{baseUrl}}:{{port}}/api/gpus/<ID>
+
+### Update a gpu
+PUT {{baseUrl}}:{{port}}/api/assignments/<ID>
+Content-Type: application/json
+
+{
+  "name": "Updated GPU",
+  "vramSize": 4.3,
+  "computerId": 123,
+  "weight": 15
+}

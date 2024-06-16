@@ -7,6 +7,6 @@ router.get('/', ComputerController.getAllComputers);
 router.get('/:id', ComputerController.getComputerById);
 router.post('/', ComputerController.createComputer);
 router.delete('/:id', ComputerController.deleteComputer);
-router.put('/:id', ComputerController.updateputer);
+router.put('/:id', ComputerController.updateComputer);
 
 export default router;

@@ -15,5 +15,5 @@ Content-Type: application/json
   "size": 4,
 }
 
-### Delete an model
+### Delete a model
 DELETE {{baseUrl}}:{{port}}/api/models/<NAME>?type=<TYPE>

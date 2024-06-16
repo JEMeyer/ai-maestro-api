@@ -2,7 +2,7 @@
 GET {{baseUrl}}:{{port}}/api/assignments
 
 ### Get assignment by ID
-GET {{baseUrl}}:{{port}}/api/assignments/1
+GET {{baseUrl}}:{{port}}/api/assignments/<ID>
 
 ### Create a new assignment
 POST {{baseUrl}}:{{port}}/api/assignments
@@ -16,13 +16,13 @@ Content-Type: application/json
 }
 
 ### Delete an assignment
-DELETE {{baseUrl}}:{{port}}/api/assignments/1
+DELETE {{baseUrl}}:{{port}}/api/assignments/<ID>
 
 ### Deploy all assignments
 POST {{baseUrl}}:{{port}}/api/assignments/deployAll
 
 ### Update an assignment
-PUT {{baseUrl}}:{{port}}/api/assignments/1
+PUT {{baseUrl}}:{{port}}/api/assignments/<ID>
 Content-Type: application/json
 
 {
