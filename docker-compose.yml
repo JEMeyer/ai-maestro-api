@@ -1,5 +1,7 @@
 services:
   ai-maestro-api:
     image: ghcr.io/jemeyer/ai-maestro-api:latest
+    env_file:
+      - .env
     ports:
       - '3000:3000'

@@ -17,7 +17,18 @@ export const createSpeechModel = async (
 export const getAllSpeechModels = async (): Promise<Model[]> => {
   const query = 'SELECT * FROM speech_models';
   const [rows] = await pool.query(query);
-  return rows;
+  let rowsArray;
+
+  // Handle the case when the table is empty or has a single row
+  if (rows === undefined) {
+    rowsArray = [];
+  } else if (Array.isArray(rows)) {
+    rowsArray = rows;
+  } else {
+    rowsArray = [rows];
+  }
+
+  return rowsArray;
 };
 
 // Read a SpeechModel by name
@@ -26,7 +37,11 @@ export const getSpeechModelByName = async (
 ): Promise<Model | null> => {
   const query = 'SELECT * FROM speech_models WHERE name = ?';
   const [rows] = await pool.query(query, [name]);
-  return rows[0];
+
+  // Handle the case when the table is empty or has a single row
+  const row = rows.length > 0 ? rows[0] : null;
+
+  return row;
 };
 
 // Update a SpeechModel

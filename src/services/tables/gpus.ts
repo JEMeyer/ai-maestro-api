@@ -30,14 +30,29 @@ export const createGPU = async (
 export const getAllGPUs = async (): Promise<GPU[]> => {
   const query = 'SELECT * FROM gpus';
   const [rows] = await pool.query(query);
-  return rows as GPU[];
+  let rowsArray;
+
+  // Handle the case when the table is empty or has a single row
+  if (rows === undefined) {
+    rowsArray = [];
+  } else if (Array.isArray(rows)) {
+    rowsArray = rows;
+  } else {
+    rowsArray = [rows];
+  }
+
+  return rowsArray;
 };
 
 // Read a GPU by id
 export const getGPUById = async (id: number): Promise<GPU | null> => {
   const query = 'SELECT * FROM gpus WHERE id = ?';
   const [rows] = await pool.query(query, [id]);
-  return rows[0] as GPU;
+
+  // Handle the case when the table is empty or has a single row
+  const row = rows.length > 0 ? rows[0] : null;
+
+  return row;
 };
 
 // Update a GPU

@@ -5,8 +5,8 @@
   "main": "web-api.js",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/web-api.js",
-    "dev": "tsc --watch & node dist/web-api.js",
+    "start": "node dist/main.js",
+    "dev": "tsc --watch & node dist/main.js",
     "lint": "eslint --fix \"src/**/*.ts\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

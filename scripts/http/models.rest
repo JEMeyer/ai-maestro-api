@@ -1,0 +1,18 @@
+### Get all models
+GET {{baseUrl}}:{{port}}/api/models
+
+# type param = llm, diffusor, stt, or tts
+
+### Get model by name
+GET {{baseUrl}}:{{port}}/api/models/<NAME>?type=<TYPE>
+
+### Create a new model
+POST {{baseUrl}}:{{port}}/api/models
+Content-Type: application/json
+{
+  "name": "New Model",
+  "size": 4,
+}
+
+### Delete an model
+DELETE {{baseUrl}}:{{port}}/api/models/<NAME>?type=<TYPE>
