@@ -1,33 +1,33 @@
 ### Get all assignments
-GET {{baseUrl}}:{{port}}/api/assignments
+GET {{baseMaestroUrl}}:{{maestroPort}}/api/assignments
 
 ### Get assignment by ID
-GET {{baseUrl}}:{{port}}/api/assignments/<ID>
+GET {{baseMaestroUrl}}:{{maestroPort}}/api/assignments/<ID>
 
 ### Create a new assignment
-POST {{baseUrl}}:{{port}}/api/assignments
+POST {{baseMaestroUrl}}:{{maestroPort}}/api/assignments
 Content-Type: application/json
 
 {
   "name": "New Assignment",
   "modelName": "Model1",
-  "port": 8080,
+  "maestroPort": 8080,
   "gpuIds": [1, 2]
 }
 
 ### Delete an assignment
-DELETE {{baseUrl}}:{{port}}/api/assignments/<ID>
+DELETE {{baseMaestroUrl}}:{{maestroPort}}/api/assignments/<ID>
 
 ### Deploy all assignments
-POST {{baseUrl}}:{{port}}/api/assignments/deployAll
+POST {{baseMaestroUrl}}:{{maestroPort}}/api/assignments/deployAll
 
 ### Update an assignment
-PUT {{baseUrl}}:{{port}}/api/assignments/<ID>
+PUT {{baseMaestroUrl}}:{{maestroPort}}/api/assignments/<ID>
 Content-Type: application/json
 
 {
   "name": "Updated Assignment",
   "modelName": "Model2",
-  "port": 8081,
+  "maestroPort": 8081,
   "gpuIds": [2, 3]
 }
