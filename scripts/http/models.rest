@@ -1,13 +1,13 @@
 ### Get all models
-GET {{baseUrl}}:{{port}}/api/models
+GET {{baseMaestroUrl}}:{{maestroPort}}/api/models
 
 # type param = llm, diffusor, stt, or tts
 
 ### Get model by name
-GET {{baseUrl}}:{{port}}/api/models/<NAME>?type=<TYPE>
+GET {{baseMaestroUrl}}:{{maestroPort}}/api/models/<NAME>?type=<TYPE>
 
 ### Create a new model
-POST {{baseUrl}}:{{port}}/api/models
+POST {{baseMaestroUrl}}:{{maestroPort}}/api/models
 Content-Type: application/json
 
 {
@@ -16,4 +16,4 @@ Content-Type: application/json
 }
 
 ### Delete a model
-DELETE {{baseUrl}}:{{port}}/api/models/<NAME>?type=<TYPE>
+DELETE {{baseMaestroUrl}}:{{maestroPort}}/api/models/<NAME>?type=<TYPE>
