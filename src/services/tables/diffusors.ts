@@ -14,19 +14,7 @@ export const createDiffusor = async (
 // Read all Diffusors
 export const getAllDiffusors = async (): Promise<Model[]> => {
   const query = 'SELECT * FROM diffusors';
-  const [rows] = await pool.query(query);
-  let rowsArray;
-
-  // Handle the case when the table is empty or has a single row
-  if (rows === undefined) {
-    rowsArray = [];
-  } else if (Array.isArray(rows)) {
-    rowsArray = rows;
-  } else {
-    rowsArray = [rows];
-  }
-
-  return rowsArray;
+  return await pool.query(query);
 };
 
 // Read a Diffusor by name
@@ -34,10 +22,12 @@ export const getDiffusorByName = async (
   name: string
 ): Promise<Model | null> => {
   const query = 'SELECT * FROM diffusors WHERE name = ? LIMIT 1';
-  const [row] = await pool.query(query, [name]);
+  const rows = await pool.query(query, [name]);
 
-  // If no row is found, row will be undefined
-  return row || null;
+  if (rows.length === 0) {
+    return null;
+  }
+  return rows[0];
 };
 
 // Update a Diffusor

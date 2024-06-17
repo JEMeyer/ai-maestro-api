@@ -15,19 +15,7 @@ export const createAssignmentGPU = async (
 // Read all Assignment-GPU mappings
 export const getAllAssignmentGPUs = async (): Promise<AssignmentGPU[]> => {
   const query = 'SELECT * FROM assignment_gpus';
-  const [rows] = await pool.query(query);
-  let rowsArray;
-
-  // Handle the case when the table is empty or has a single row
-  if (rows === undefined) {
-    rowsArray = [];
-  } else if (Array.isArray(rows)) {
-    rowsArray = rows;
-  } else {
-    rowsArray = [rows];
-  }
-
-  return rowsArray;
+  return await pool.query(query);
 };
 
 // Read Assignment-GPU mappings by assignment id
@@ -35,19 +23,7 @@ export const getAssignmentGPUsByAssignmentId = async (
   assignmentId: number
 ): Promise<AssignmentGPU[]> => {
   const query = 'SELECT * FROM assignment_gpus WHERE assignment_id = ?';
-  const [rows] = await pool.query(query, [assignmentId]);
-  let rowsArray;
-
-  // Handle the case when the table is empty or has a single row
-  if (rows === undefined) {
-    rowsArray = [];
-  } else if (Array.isArray(rows)) {
-    rowsArray = rows;
-  } else {
-    rowsArray = [rows];
-  }
-
-  return rowsArray;
+  return await pool.query(query, [assignmentId]);
 };
 
 // Delete Assignment-GPU mappings by assignment id

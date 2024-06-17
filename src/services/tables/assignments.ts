@@ -10,25 +10,14 @@ export const createAssignment = async (
   const query =
     'INSERT INTO assignments (name, model_name, port) VALUES (?, ?, ?)';
   const result = await pool.query(query, [name, modelName, port]);
+  console.log(result);
   return Number(result.insertId);
 };
 
 // Read all Assignments
 export const getAllAssignments = async (): Promise<Assignment[]> => {
   const query = 'SELECT * FROM assignments';
-  const [rows] = await pool.query(query);
-  let rowsArray;
-
-  // Handle the case when the table is empty or has a single row
-  if (rows === undefined) {
-    rowsArray = [];
-  } else if (Array.isArray(rows)) {
-    rowsArray = rows;
-  } else {
-    rowsArray = [rows];
-  }
-
-  return rowsArray;
+  return await pool.query(query);
 };
 
 // Read an Assignment by id
@@ -36,10 +25,12 @@ export const getAssignmentById = async (
   id: number
 ): Promise<Assignment | null> => {
   const query = 'SELECT * FROM assignments WHERE id = ? LIMIT 1';
-  const [row] = await pool.query(query, [id]);
+  const rows = await pool.query(query, [id]);
 
-  // If no row is found, row will be undefined
-  return row || null;
+  if (rows.length === 0) {
+    return null;
+  }
+  return rows[0];
 };
 
 // Update an Assignment
@@ -52,6 +43,7 @@ export const updateAssignment = async (
   const query =
     'UPDATE assignments SET name = ?, model_name = ?, port = ? WHERE id = ?';
   const result = await pool.query(query, [name, modelName, port, id]);
+  console.log(result);
   return Number(result.affectedRows);
 };
 
@@ -59,5 +51,6 @@ export const updateAssignment = async (
 export const deleteAssignment = async (id: number): Promise<number> => {
   const query = 'DELETE FROM assignments WHERE id = ?';
   const result = await pool.query(query, [id]);
+  console.log(result);
   return Number(result.affectedRows);
 };

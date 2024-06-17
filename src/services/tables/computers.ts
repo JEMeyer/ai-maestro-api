@@ -8,34 +8,25 @@ export const createComputer = async (
 ): Promise<number> => {
   const query = 'INSERT INTO computers (name, ip_addr) VALUES (?, ?)';
   const result = await pool.query(query, [name, ipAddr]);
+  console.log(result);
   return Number(result.insertId);
 };
 
 // Read all computers
 export const getAllComputers = async (): Promise<Computer[]> => {
   const query = 'SELECT * FROM computers';
-  const [rows] = await pool.query(query);
-  let rowsArray;
-
-  // Handle the case when the table is empty or has a single row
-  if (rows === undefined) {
-    rowsArray = [];
-  } else if (Array.isArray(rows)) {
-    rowsArray = rows;
-  } else {
-    rowsArray = [rows];
-  }
-
-  return rowsArray;
+  return await pool.query(query);
 };
 
 // Read a computer by id
 export const getComputerById = async (id: number): Promise<Computer | null> => {
   const query = 'SELECT * FROM computers WHERE id = ? LIMIT 1';
-  const [row] = await pool.query(query, [id]);
+  const rows = await pool.query(query, [id]);
 
-  // If no row is found, row will be undefined
-  return row || null;
+  if (rows.length === 0) {
+    return null;
+  }
+  return rows[0];
 };
 
 // Update a computer
@@ -46,6 +37,7 @@ export const updateComputer = async (
 ): Promise<number> => {
   const query = 'UPDATE computers SET name = ?, ip_addr = ? WHERE id = ?';
   const result = await pool.query(query, [name, ipAddr, id]);
+  console.log(result);
   return Number(result.affectedRows);
 };
 
@@ -53,5 +45,6 @@ export const updateComputer = async (
 export const deleteComputer = async (id: number): Promise<number> => {
   const query = 'DELETE FROM computers WHERE id = ?';
   const result = await pool.query(query, [id]);
+  console.log(result);
   return Number(result.affectedRows);
 };

@@ -10,7 +10,7 @@ Content-Type: application/json
 
 {
   "name": "New Computer",
-  "ipAddr": "0.0.0.0",
+  "ipAddr": "0.0.0.0"
 }
 
 ### Delete an computer
@@ -22,5 +22,5 @@ Content-Type: application/json
 
 {
   "name": "Updated Computer",
-  "ipAddr": "0.0.0.1",
+  "ipAddr": "0.0.0.1"
 }
