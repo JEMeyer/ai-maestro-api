@@ -3,9 +3,23 @@ import { Server as HttpServer } from 'http';
 import { redis, redisSubscriber } from './redis';
 
 const setupWebSocket = (server: HttpServer) => {
+  const allowedOrigins = (process.env.CORS_ORIGIN || '').split(',');
+
   const io = new Server(server, {
     cors: {
-      origin: process.env.CORS_ORIGIN || [],
+      origin: (origin, callback) => {
+        // Check if the origin is in the allowed list or is a local IP address
+        if (
+          !origin ||
+          allowedOrigins.includes(origin) ||
+          /^http:\/\/localhost:\d+$/.test(origin) ||
+          /^http:\/\/192\.168\.\d+\.\d+:\d+$/.test(origin)
+        ) {
+          callback(null, true);
+        } else {
+          callback(new Error('Not allowed by CORS'));
+        }
+      },
       methods: ['GET', 'POST'],
       credentials: true,
     },
