@@ -8,15 +8,17 @@ const setupWebSocket = (server: HttpServer) => {
   const io = new Server(server, {
     cors: {
       origin: (origin, callback) => {
-        // Check if the origin is in the allowed list or is a local IP address
+        console.log(`Incoming request from origin: ${origin}`);
         if (
           !origin ||
           allowedOrigins.includes(origin) ||
           /^http:\/\/localhost:\d+$/.test(origin) ||
           /^http:\/\/192\.168\.\d+\.\d+:\d+$/.test(origin)
         ) {
+          console.log(`Origin ${origin} allowed by CORS`);
           callback(null, true);
         } else {
+          console.log(`Origin ${origin} not allowed by CORS`);
           callback(new Error('Not allowed by CORS'));
         }
       },
@@ -29,6 +31,7 @@ const setupWebSocket = (server: HttpServer) => {
     console.log('New client connected');
 
     socket.on('subscribeToChannel', (channelName: string) => {
+      console.log(`Subscribing to channel: ${channelName}`);
       redisSubscriber.subscribe(channelName, (err, count) => {
         if (err) {
           console.error('Failed to subscribe:', err.message);
@@ -39,16 +42,19 @@ const setupWebSocket = (server: HttpServer) => {
 
       redisSubscriber.on('message', (channel, message) => {
         if (channel === channelName) {
+          console.log(`Received message on channel ${channel}: ${message}`);
           socket.emit('ReceiveMessage', { channel, message });
         }
       });
     });
 
     socket.on('publishToChannel', ({ channelName, message }) => {
+      console.log(`Publishing message to channel ${channelName}: ${message}`);
       redis.publish(channelName, message);
     });
 
     socket.on('getKeyValuePairsByPattern', async (pattern) => {
+      console.log(`Fetching key-value pairs for pattern: ${pattern}`);
       try {
         const keys = await redis.keys(pattern);
         const result: Record<string, string> = {};
@@ -58,7 +64,7 @@ const setupWebSocket = (server: HttpServer) => {
           result[key] = value ?? '';
         }
 
-        console.log('Emitting keyValuePairs:', result); // Debugging log
+        console.log('Emitting keyValuePairs:', result);
         socket.emit('keyValuePairs', result);
       } catch (error) {
         console.error('Error fetching key-value pairs:', error);
