@@ -1,9 +1,6 @@
 # Use a minimal Node.js base image
 FROM node:18-alpine as base
 
-# Install PM2 globally
-RUN npm install -g pm2
-
 # Builder stage
 FROM base AS builder
 
@@ -40,5 +37,5 @@ RUN npm ci --only=production
 # Web API
 EXPOSE 3000
 
-# Start the application using PM2
-CMD ["pm2-runtime", "dist/main.js"]
+# Start the application
+CMD ["node", "dist/main.js"]
