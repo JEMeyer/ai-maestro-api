@@ -5,7 +5,7 @@ import { redis, redisSubscriber } from './redis';
 const setupWebSocket = (server: HttpServer) => {
   const io = new Server(server, {
     cors: {
-      origin: process.env.CORS_ORIGIN || '*',
+      origin: process.env.CORS_ORIGIN || [],
       methods: ['GET', 'POST'],
       credentials: true,
     },
@@ -32,6 +32,24 @@ const setupWebSocket = (server: HttpServer) => {
 
     socket.on('publishToChannel', ({ channelName, message }) => {
       redis.publish(channelName, message);
+    });
+
+    socket.on('getKeyValuePairsByPattern', async (pattern) => {
+      try {
+        const keys = await redis.keys(pattern);
+        const result: Record<string, string> = {};
+
+        for (const key of keys) {
+          const value = await redis.get(key);
+          result[key] = value ?? '';
+        }
+
+        console.log('Emitting keyValuePairs:', result); // Debugging log
+        socket.emit('keyValuePairs', result);
+      } catch (error) {
+        console.error('Error fetching key-value pairs:', error);
+        socket.emit('keyValuePairs', {});
+      }
     });
 
     socket.on('disconnect', () => {
