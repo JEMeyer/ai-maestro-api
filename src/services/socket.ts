@@ -1,6 +1,6 @@
-import { Server } from 'socket.io';
 import { Server as HttpServer } from 'http';
 import { redis, redisSubscriber } from './redis';
+import { Server } from 'socket.io';
 
 const setupWebSocket = (server: HttpServer) => {
   const allowedOrigins = (process.env.CORS_ORIGIN || '').split(',');
