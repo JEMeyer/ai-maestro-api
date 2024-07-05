@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import * as GpuService from '../services/tables/gpus';
+import { redisClient } from '../services/redis';
 
 export const getAllGpus = async (_req: Request, res: Response) => {
   const gpus = await GpuService.getAllGPUs();
@@ -30,4 +31,22 @@ export const updateGPU = async (req: Request, res: Response) => {
   const { name, vramSize, computerId, weight } = req.body;
   await GpuService.updateGPU(Number(id), name, vramSize, computerId, weight);
   res.sendStatus(204);
+};
+
+export const getGpuLockStatuses = async (_req: Request, res: Response) => {
+  try {
+    const keys = await redisClient.keys('gpu-lock:*');
+    const statuses = await Promise.all(keys.map((key) => redisClient.get(key)));
+    const statusMap = keys.reduce(
+      (acc, key, index) => {
+        acc[key] = statuses[index];
+        return acc;
+      },
+      {} as { [key: string]: string | null }
+    );
+
+    res.json(statusMap);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch GPU statuses' });
+  }
 };
