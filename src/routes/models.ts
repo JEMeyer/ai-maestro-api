@@ -4,8 +4,8 @@ import * as ModelController from '../controllers/model';
 const router = Router();
 
 router.get('/', ModelController.getAllModels);
-router.get('/:name', ModelController.getModelByName);
 router.post('/', ModelController.createModel);
+router.get('/:name', ModelController.getModelByName);
 router.delete('/:name', ModelController.deleteModel);
 
 export default router;
