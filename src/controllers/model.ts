@@ -18,11 +18,11 @@ export const getAllModels = async (_req: Request, res: Response) => {
 
 export const getModelByName = async (req: Request, res: Response) => {
   const { name } = req.params;
-  const { type } = req.query;
+  const { model_type } = req.query;
 
   let model: Model | undefined | null;
 
-  switch (type) {
+  switch (model_type) {
     case 'llm':
       model = await LlmService.getLLMByName(name);
       break;
@@ -34,9 +34,9 @@ export const getModelByName = async (req: Request, res: Response) => {
       model = await SpeechModelService.getSpeechModelByName(name);
       break;
     default:
-      res
-        .status(400)
-        .json({ error: 'Invalid data/payload - missing or invalid "type"' });
+      res.status(400).json({
+        error: 'Invalid data/payload - missing or invalid "model_type"',
+      });
       return;
   }
 
@@ -45,10 +45,10 @@ export const getModelByName = async (req: Request, res: Response) => {
 };
 
 export const createModel = async (req: Request, res: Response) => {
-  const { name, size, type } = req.body;
+  const { name, size, model_type } = req.body;
 
   let id;
-  switch (type) {
+  switch (model_type) {
     case 'llm':
       id = await LlmService.createLLM(name, size);
       break;
@@ -57,7 +57,7 @@ export const createModel = async (req: Request, res: Response) => {
       break;
     case 'stt':
     case 'tts':
-      id = await SpeechModelService.createSpeechModel(name, size, type);
+      id = await SpeechModelService.createSpeechModel(name, size, model_type);
       break;
     default:
       res.status(400).json({ error: 'Invalid data/payload' });
@@ -69,9 +69,9 @@ export const createModel = async (req: Request, res: Response) => {
 
 export const deleteModel = async (req: Request, res: Response) => {
   const { name } = req.params;
-  const { type } = req.query;
+  const { model_type } = req.query;
 
-  switch (type) {
+  switch (model_type) {
     case 'llm':
       await LlmService.deleteLLM(name);
       break;

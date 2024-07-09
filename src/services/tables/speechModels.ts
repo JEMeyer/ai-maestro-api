@@ -5,11 +5,11 @@ import { Model } from './types';
 export const createSpeechModel = async (
   name: string,
   size: number,
-  type: 'tts' | 'stt'
+  model_type: 'tts' | 'stt'
 ): Promise<number> => {
   const query =
     'INSERT INTO speech_models (name, size, model_type) VALUES (?, ?, ?)';
-  const result = await pool.query(query, [name, size, type]);
+  const result = await pool.query(query, [name, size, model_type]);
   return Number(result.insertId);
 };
 
@@ -35,10 +35,12 @@ export const getSpeechModelByName = async (
 // Update a SpeechModel
 export const updateSpeechModel = async (
   name: string,
-  size: number
+  size: number,
+  model_type: 'tts' | 'stt'
 ): Promise<number> => {
-  const query = 'UPDATE speech_models SET size = ? WHERE name = ?';
-  const result = await pool.query(query, [size, name]);
+  const query =
+    'UPDATE speech_models SET size = ?, model_type = ? WHERE name = ?';
+  const result = await pool.query(query, [size, model_type, name]);
   return Number(result.affectedRows);
 };
 

@@ -14,13 +14,23 @@ export const createLLM = async (
 // Read all LLMs
 export const getAllLLMs = async (): Promise<Model[]> => {
   const query = 'SELECT * FROM llms';
-  return await pool.query(query);
+  let llms = await pool.query(query);
+  llms = llms.map((model: Model) => ({
+    ...model,
+    model_type: 'llm',
+  }));
+
+  return llms;
 };
 
 // Read an LLM by name
 export const getLLMByName = async (name: string): Promise<Model | null> => {
   const query = 'SELECT * FROM llms WHERE name = ? LIMIT 1';
-  const rows = await pool.query(query, [name]);
+  let rows = await pool.query(query, [name]);
+  rows = rows.map((model: Model) => ({
+    ...model,
+    model_type: 'llm',
+  }));
 
   if (rows.length === 0) {
     return null;

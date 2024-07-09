@@ -15,7 +15,7 @@ export interface GPU {
 export interface Model {
   name: string;
   size: number;
-  type?: 'stt' | 'tts'; // Only for speech models
+  model_type?: 'stt' | 'tts'; // Only for speech models
 }
 
 export interface Assignment {

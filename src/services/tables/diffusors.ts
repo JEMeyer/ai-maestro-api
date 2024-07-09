@@ -14,7 +14,13 @@ export const createDiffusor = async (
 // Read all Diffusors
 export const getAllDiffusors = async (): Promise<Model[]> => {
   const query = 'SELECT * FROM diffusors';
-  return await pool.query(query);
+  let diffusors = await pool.query(query);
+  diffusors = diffusors.map((model: Model) => ({
+    ...model,
+    model_type: 'diffusor',
+  }));
+
+  return diffusors;
 };
 
 // Read a Diffusor by name
@@ -22,7 +28,11 @@ export const getDiffusorByName = async (
   name: string
 ): Promise<Model | null> => {
   const query = 'SELECT * FROM diffusors WHERE name = ? LIMIT 1';
-  const rows = await pool.query(query, [name]);
+  let rows = await pool.query(query, [name]);
+  rows = rows.map((model: Model) => ({
+    ...model,
+    model_type: 'diffusor',
+  }));
 
   if (rows.length === 0) {
     return null;
