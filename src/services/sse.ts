@@ -8,15 +8,17 @@ export const setupSSE = (app: Express) => {
     res.setHeader('Connection', 'keep-alive');
 
     const handleMessage = (message: string) => {
+      console.log(`[${new Date().toISOString()}] Sending message: ${message}`);
       res.write(`data: ${message}\n\n`);
     };
 
     pubSubClient.subscribe('gpu-lock-changes', (message) => {
-      console.log('passing along channel update with message: ', message);
+      console.log(`[${new Date().toISOString()}] Received message: ${message}`);
       handleMessage(message);
     });
 
     req.on('close', () => {
+      console.log(`[${new Date().toISOString()}] unsubscribing from redis.`);
       pubSubClient.unsubscribe('gpu-lock-changes', handleMessage);
       res.end();
     });
