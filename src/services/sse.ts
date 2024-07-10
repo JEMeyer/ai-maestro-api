@@ -6,6 +6,7 @@ export const setupSSE = (app: Express) => {
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
+    res.setHeader('X-Accel-Buffering', 'no');
 
     const handleMessage = (message: string) => {
       console.log(`[${new Date().toISOString()}] Sending message: ${message}`);
