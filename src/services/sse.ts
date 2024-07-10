@@ -12,29 +12,15 @@ export const setupSSE = (app: Express) => {
 
     res.write(': init\n\n');
 
-    // Send heartbeat every 15 seconds to keep the connection open
+    // Send heartbeat every 15 seconds to keep the connection open (for cloudflare maybe? just in case)
     const heartbeatInterval = setInterval(() => {
-      if (!res.write(': ping\n\n')) {
-        res.once('drain', () => {
-          console.log(
-            `[${new Date().toISOString()}] Heartbeat sent after drain`
-          );
-        });
-      }
+      res.write(': ping\n\n');
     }, 15000);
 
     const handleMessage = (message: string) => {
       console.log(`[${new Date().toISOString()}] Sending message: ${message}`);
-      if (!res.write(`data: ${message}\n\n`)) {
-        res.once('drain', () => {
-          console.log(
-            `[${new Date().toISOString()}] Message sent after drain: ${message}`
-          );
-          res.write(': ping\n\n'); // Send a ping to ensure the message is flushed
-        });
-      } else {
-        res.write(': ping\n\n'); // Send a ping to ensure the message is flushed
-      }
+      res.write(`data: ${message}\n\n`);
+      res.write(': ping\n\n'); // Send a ping flush the message
     };
 
     pubSubClient.subscribe('gpu-lock-changes', (message) => {
