@@ -11,8 +11,6 @@ export const getAllAssignments = async (_req: Request, res: Response) => {
   const assignments = await AssignmentService.getAllAssignments();
   const assignmentGpus = await AssignmentGpuService.getAllDBAssignmentGPUs();
 
-  console.log(assignmentGpus);
-  console.log(assignments);
   const returnArray: Assignment[] = [...assignments].map((assignment) => {
     const assignmentGpusForAssignment = assignmentGpus.filter(
       ({ assignment_id }) => assignment_id === assignment.id
