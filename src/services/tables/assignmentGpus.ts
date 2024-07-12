@@ -1,8 +1,8 @@
 import { pool } from '../db';
-import { AssignmentGPU } from './types';
+import { DBAssignmentGPU } from './types';
 
 // Create a new Assignment-GPU mapping
-export const createAssignmentGPU = async (
+export const createDBAssignmentGPU = async (
   assignmentId: number,
   gpuId: number
 ): Promise<number> => {
@@ -13,21 +13,21 @@ export const createAssignmentGPU = async (
 };
 
 // Read all Assignment-GPU mappings
-export const getAllAssignmentGPUs = async (): Promise<AssignmentGPU[]> => {
+export const getAllDBAssignmentGPUs = async (): Promise<DBAssignmentGPU[]> => {
   const query = 'SELECT * FROM assignment_gpus';
   return await pool.query(query);
 };
 
 // Read Assignment-GPU mappings by assignment id
-export const getAssignmentGPUsByAssignmentId = async (
+export const getDBAssignmentGPUsByAssignmentId = async (
   assignmentId: number
-): Promise<AssignmentGPU[]> => {
+): Promise<DBAssignmentGPU[]> => {
   const query = 'SELECT * FROM assignment_gpus WHERE assignment_id = ?';
   return await pool.query(query, [assignmentId]);
 };
 
 // Delete Assignment-GPU mappings by assignment id
-export const deleteAssignmentGPUsByAssignmentId = async (
+export const deleteDBAssignmentGPUsByAssignmentId = async (
   assignmentId: number
 ): Promise<number> => {
   const query = 'DELETE FROM assignment_gpus WHERE assignment_id = ?';

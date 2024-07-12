@@ -5,10 +5,22 @@ import * as DiffusorService from '../services/tables/diffusors';
 import * as GpuService from '../services/tables/gpus';
 import * as ComputerService from '../services/tables/computers';
 import * as EdgeServerService from '../services/edge';
+import { Assignment } from '../services/tables/types';
 
 export const getAllAssignments = async (_req: Request, res: Response) => {
-  const Assignments = await AssignmentService.getAllAssignments();
-  res.json(Assignments);
+  const assignments = await AssignmentService.getAllAssignments();
+  const assignmentGpus = await AssignmentGpuService.getAllDBAssignmentGPUs();
+
+  const returnArray: Assignment[] = [...assignments].map((assignment) => {
+    return {
+      ...assignment,
+      gpuIds: assignmentGpus
+        .filter(({ assignmentId }) => assignmentId === assignment.id)
+        .map(({ gpuId }) => gpuId),
+    };
+  });
+
+  res.json(returnArray);
 };
 
 export const getAssignmentById = async (req: Request, res: Response) => {
@@ -32,7 +44,7 @@ export const createAssignment = async (req: Request, res: Response) => {
   );
   await Promise.all(
     gpuIds.map((gpuId) =>
-      AssignmentGpuService.createAssignmentGPU(assignmentId, gpuId)
+      AssignmentGpuService.createDBAssignmentGPU(assignmentId, gpuId)
     )
   );
   res.json({ assignmentId });
@@ -40,8 +52,9 @@ export const createAssignment = async (req: Request, res: Response) => {
 
 export const deleteAssignment = async (req: Request, res: Response) => {
   const { id } = req.params;
-  await AssignmentService.deleteAssignment(Number(id));
-  await AssignmentGpuService.deleteAssignmentGPUsByAssignmentId(Number(id));
+  const idAsNumber = Number(id);
+  await AssignmentService.deleteAssignment(idAsNumber);
+  await AssignmentGpuService.deleteDBAssignmentGPUsByAssignmentId(idAsNumber);
   res.sendStatus(204);
 };
 
@@ -53,11 +66,12 @@ export const updateAssignment = async (req: Request, res: Response) => {
     port: number;
     gpuIds: number[];
   };
+  const idAsNumber = Number(id);
 
   // First update the assignment record, and pull all current assignmentGpus
   const [affectedARows, currentAssignmentGpus] = await Promise.all([
-    AssignmentService.updateAssignment(Number(id), name, modelName, port),
-    AssignmentGpuService.getAssignmentGPUsByAssignmentId(Number(id)),
+    AssignmentService.updateAssignment(idAsNumber, name, modelName, port),
+    AssignmentGpuService.getDBAssignmentGPUsByAssignmentId(idAsNumber),
   ]);
 
   // Now look to see which assignment gpus we need to delete/create
@@ -65,7 +79,7 @@ export const updateAssignment = async (req: Request, res: Response) => {
     gpuIds
       .map((gpuId) => {
         if (!currentAssignmentGpus.find((ag) => ag.gpuId === gpuId)) {
-          return AssignmentGpuService.createAssignmentGPU(Number(id), gpuId);
+          return AssignmentGpuService.createDBAssignmentGPU(idAsNumber, gpuId);
         }
       })
       .concat(
@@ -73,7 +87,7 @@ export const updateAssignment = async (req: Request, res: Response) => {
           .map((ag) => {
             if (!gpuIds.find((gpuId) => ag.gpuId === gpuId)) {
               return AssignmentGpuService.deleteAssignmentGpu(
-                Number(id),
+                idAsNumber,
                 ag.gpuId
               );
             }
@@ -85,12 +99,14 @@ export const updateAssignment = async (req: Request, res: Response) => {
 };
 
 export const deployAssignments = async (req: Request, res: Response) => {
-  const [computers, gpus, diffusors, assignments] = await Promise.all([
-    ComputerService.getAllComputers(),
-    GpuService.getAllGPUs(),
-    DiffusorService.getAllDiffusors(),
-    AssignmentService.getAllAssignments(),
-  ]);
+  const [computers, gpus, diffusors, assignments, assignmentGpus] =
+    await Promise.all([
+      ComputerService.getAllComputers(),
+      GpuService.getAllGPUs(),
+      DiffusorService.getAllDiffusors(),
+      AssignmentService.getAllAssignments(),
+      AssignmentGpuService.getAllDBAssignmentGPUs(),
+    ]);
 
   // First down all the containers, then re-make the ones we want
   computers.forEach(async (computer) => {
@@ -112,7 +128,9 @@ export const deployAssignments = async (req: Request, res: Response) => {
           await EdgeServerService.makeContainer(ipAddr, {
             containerName: assignment.name,
             port: String(assignment.port),
-            gpuIds: assignment.gpuIds,
+            gpuIds: assignmentGpus
+              .filter(({ assignmentId }) => assignment.id === assignmentId)
+              .map(({ gpuId }) => gpuId),
             diffusionModel: isDiffusionModel ? assignment.modelName : undefined,
           });
 

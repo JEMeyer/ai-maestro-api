@@ -1,10 +1,10 @@
 import { pool } from '../db';
 
 interface GPU {
-  id: string;
+  id: number;
   name: string;
   vramSize: number;
-  computerId: string;
+  computerId: number;
   weight?: number;
 }
 

@@ -1,5 +1,5 @@
 import { pool } from '../db';
-import { Assignment } from './types';
+import { DBAssignment } from './types';
 
 // Create a new Assignment
 export const createAssignment = async (
@@ -15,7 +15,7 @@ export const createAssignment = async (
 };
 
 // Read all Assignments
-export const getAllAssignments = async (): Promise<Assignment[]> => {
+export const getAllAssignments = async (): Promise<DBAssignment[]> => {
   const query = 'SELECT * FROM assignments';
   return await pool.query(query);
 };
@@ -23,7 +23,7 @@ export const getAllAssignments = async (): Promise<Assignment[]> => {
 // Read an Assignment by id
 export const getAssignmentById = async (
   id: number
-): Promise<Assignment | null> => {
+): Promise<DBAssignment | null> => {
   const query = 'SELECT * FROM assignments WHERE id = ? LIMIT 1';
   const rows = await pool.query(query, [id]);
 
