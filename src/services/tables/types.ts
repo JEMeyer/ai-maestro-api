@@ -1,44 +1,44 @@
 export interface Computer {
   id: number;
   name: string;
-  ipAddr: string;
-  displayOrder: number;
+  ip_addr: string;
+  display_order: number;
 }
 
 export interface GPU {
   id: number;
   name: string;
-  vramSize: number;
-  computerId: number;
+  vram_size: number;
+  computer_Id: number;
   weight?: number;
-  displayOrder: number;
+  display_order: number;
 }
 
 export interface Model {
   name: string;
   size: number;
   model_type?: 'stt' | 'tts'; // Only for speech models
-  displayOrder: number;
+  display_order: number;
 }
 
 export interface DBAssignment {
   id: number;
   name: string;
-  modelName: string;
+  model_name: string;
   port: number;
-  displayOrder: number;
+  display_order: number;
 }
 
 export interface DBAssignmentGPU {
-  assignmentId: number;
-  gpuId: number;
+  assignment_id: number;
+  gpu_id: number;
 }
 
 export interface Assignment {
   id: number;
   name: string;
-  modelName: string;
+  model_name: string;
   gpuIds: number[];
   port: number;
-  displayOrder: number;
+  display_order: number;
 }

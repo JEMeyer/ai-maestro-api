@@ -11,12 +11,16 @@ export const getAllAssignments = async (_req: Request, res: Response) => {
   const assignments = await AssignmentService.getAllAssignments();
   const assignmentGpus = await AssignmentGpuService.getAllDBAssignmentGPUs();
 
+  console.log(assignmentGpus);
+  console.log(assignments);
   const returnArray: Assignment[] = [...assignments].map((assignment) => {
+    const assignmentGpusForAssignment = assignmentGpus.filter(
+      ({ assignment_id }) => assignment_id === assignment.id
+    );
+    const gpuIds = assignmentGpusForAssignment.map(({ gpu_id }) => gpu_id);
     return {
       ...assignment,
-      gpuIds: assignmentGpus
-        .filter(({ assignmentId }) => assignmentId === assignment.id)
-        .map(({ gpuId }) => gpuId),
+      gpuIds: gpuIds,
     };
   });
 
@@ -78,17 +82,17 @@ export const updateAssignment = async (req: Request, res: Response) => {
   await Promise.all(
     gpuIds
       .map((gpuId) => {
-        if (!currentAssignmentGpus.find((ag) => ag.gpuId === gpuId)) {
+        if (!currentAssignmentGpus.find((ag) => ag.gpu_id === gpuId)) {
           return AssignmentGpuService.createDBAssignmentGPU(idAsNumber, gpuId);
         }
       })
       .concat(
         currentAssignmentGpus
           .map((ag) => {
-            if (!gpuIds.find((gpuId) => ag.gpuId === gpuId)) {
+            if (!gpuIds.find((gpuId) => ag.gpu_id === gpuId)) {
               return AssignmentGpuService.deleteAssignmentGpu(
                 idAsNumber,
-                ag.gpuId
+                ag.gpu_id
               );
             }
           })
@@ -110,7 +114,7 @@ export const deployAssignments = async (req: Request, res: Response) => {
 
   // First down all the containers, then re-make the ones we want
   computers.forEach(async (computer) => {
-    await EdgeServerService.removeAllContainers(computer.ipAddr);
+    await EdgeServerService.removeAllContainers(computer.ip_addr);
   });
 
   // Loop through each model, start the containers, load the model in each container
@@ -118,9 +122,9 @@ export const deployAssignments = async (req: Request, res: Response) => {
   assignments.forEach((assignment) => {
     const ipAddr = computers.find(({ id }) => {
       return id === gpus[0].computerId;
-    })?.ipAddr;
+    })?.ip_addr;
     const isDiffusionModel = diffusors.some(
-      ({ name }) => name === assignment.modelName
+      ({ name }) => name === assignment.model_name
     );
     if (ipAddr != null) {
       makeAndLoadContainerPromises.push(
@@ -129,14 +133,16 @@ export const deployAssignments = async (req: Request, res: Response) => {
             containerName: assignment.name,
             port: String(assignment.port),
             gpuIds: assignmentGpus
-              .filter(({ assignmentId }) => assignment.id === assignmentId)
-              .map(({ gpuId }) => gpuId),
-            diffusionModel: isDiffusionModel ? assignment.modelName : undefined,
+              .filter(({ assignment_id }) => assignment.id === assignment_id)
+              .map(({ gpu_id }) => gpu_id),
+            diffusionModel: isDiffusionModel
+              ? assignment.model_name
+              : undefined,
           });
 
           await EdgeServerService.loadModel(ipAddr, {
             containerName: assignment.name,
-            modelName: assignment.modelName,
+            modelName: assignment.model_name,
             mode: isDiffusionModel ? 'diffusion' : undefined,
           });
         })()
