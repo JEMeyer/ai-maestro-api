@@ -4,16 +4,18 @@ import { Model } from './types';
 // Create a new Diffusor
 export const createDiffusor = async (
   name: string,
-  size: number
+  size: number,
+  display_order: number
 ): Promise<number> => {
-  const query = 'INSERT INTO diffusors (name, size) VALUES (?, ?)';
-  const result = await pool.query(query, [name, size]);
+  const query =
+    'INSERT INTO diffusors (name, size, display_order) VALUES (?, ?, ?)';
+  const result = await pool.query(query, [name, size, display_order]);
   return Number(result.insertId);
 };
 
 // Read all Diffusors
 export const getAllDiffusors = async (): Promise<Model[]> => {
-  const query = 'SELECT * FROM diffusors';
+  const query = 'SELECT * FROM diffusors ORDER BY display_order ASC';
   let diffusors = await pool.query(query);
   diffusors = diffusors.map((model: Model) => ({
     ...model,
@@ -43,10 +45,12 @@ export const getDiffusorByName = async (
 // Update a Diffusor
 export const updateDiffusor = async (
   name: string,
-  size: number
+  size: number,
+  display_order: number
 ): Promise<number> => {
-  const query = 'UPDATE diffusors SET size = ? WHERE name = ?';
-  const result = await pool.query(query, [size, name]);
+  const query =
+    'UPDATE diffusors SET size = ?, display_order = ? WHERE name = ?';
+  const result = await pool.query(query, [size, display_order, name]);
   return Number(result.affectedRows);
 };
 

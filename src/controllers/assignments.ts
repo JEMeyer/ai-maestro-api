@@ -33,16 +33,18 @@ export const getAssignmentById = async (req: Request, res: Response) => {
 };
 
 export const createAssignment = async (req: Request, res: Response) => {
-  const { name, modelName, port, gpuIds } = req.body as {
+  const { name, modelName, port, gpuIds, display_order } = req.body as {
     name: string;
     modelName: string;
     port: number;
     gpuIds: number[];
+    display_order: number;
   };
   const assignmentId = await AssignmentService.createAssignment(
     name,
     modelName,
-    port
+    port,
+    display_order
   );
   await Promise.all(
     gpuIds.map((gpuId) =>
@@ -62,17 +64,24 @@ export const deleteAssignment = async (req: Request, res: Response) => {
 
 export const updateAssignment = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { name, modelName, port, gpuIds } = req.body as {
+  const { name, modelName, port, gpuIds, display_order } = req.body as {
     name: string;
     modelName: string;
     port: number;
     gpuIds: number[];
+    display_order: number;
   };
   const idAsNumber = Number(id);
 
   // First update the assignment record, and pull all current assignmentGpus
   const [affectedARows, currentAssignmentGpus] = await Promise.all([
-    AssignmentService.updateAssignment(idAsNumber, name, modelName, port),
+    AssignmentService.updateAssignment(
+      idAsNumber,
+      name,
+      modelName,
+      port,
+      display_order
+    ),
     AssignmentGpuService.getDBAssignmentGPUsByAssignmentId(idAsNumber),
   ]);
 

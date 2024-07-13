@@ -4,16 +4,17 @@ import { Model } from './types';
 // Create a new LLM
 export const createLLM = async (
   name: string,
-  size: number
+  size: number,
+  display_order: number
 ): Promise<number> => {
-  const query = 'INSERT INTO llms (name, size) VALUES (?, ?)';
-  const result = await pool.query(query, [name, size]);
+  const query = 'INSERT INTO llms (name, size, display_order) VALUES (?, ?, ?)';
+  const result = await pool.query(query, [name, size, display_order]);
   return Number(result.insertId);
 };
 
 // Read all LLMs
 export const getAllLLMs = async (): Promise<Model[]> => {
-  const query = 'SELECT * FROM llms';
+  const query = 'SELECT * FROM llms ORDER BY display_order ASC';
   let llms = await pool.query(query);
   llms = llms.map((model: Model) => ({
     ...model,
@@ -41,10 +42,11 @@ export const getLLMByName = async (name: string): Promise<Model | null> => {
 // Update an LLM
 export const updateLLM = async (
   name: string,
-  size: number
+  size: number,
+  display_order: number
 ): Promise<number> => {
-  const query = 'UPDATE llms SET size = ? WHERE name = ?';
-  const result = await pool.query(query, [size, name]);
+  const query = 'UPDATE llms SET size = ?, display_order = ? WHERE name = ?';
+  const result = await pool.query(query, [size, display_order, name]);
   return Number(result.affectedRows);
 };
 

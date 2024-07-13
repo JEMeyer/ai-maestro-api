@@ -14,8 +14,8 @@ export const getComputerById = async (req: Request, res: Response) => {
 };
 
 export const createComputer = async (req: Request, res: Response) => {
-  const { name, ipAddr } = req.body;
-  const id = await ComputerService.createComputer(name, ipAddr);
+  const { name, ipAddr, display_order } = req.body;
+  const id = await ComputerService.createComputer(name, ipAddr, display_order);
   res.json({ id });
 };
 
@@ -26,11 +26,12 @@ export const deleteComputer = async (req: Request, res: Response) => {
 };
 
 export const updateComputer = async (req: Request, res: Response) => {
-  const { id, name, ipAddr } = req.body;
+  const { id, name, ipAddr, display_order } = req.body;
   const affectedRows = await ComputerService.updateComputer(
-    Number(id),
+    id,
     name,
-    ipAddr
+    ipAddr,
+    display_order
   );
   res.json({ affectedRows });
 };

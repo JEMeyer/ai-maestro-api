@@ -5,18 +5,24 @@ import { DBAssignment } from './types';
 export const createAssignment = async (
   name: string,
   modelName: string,
-  port: number
+  port: number,
+  display_order: number
 ): Promise<number> => {
   const query =
-    'INSERT INTO assignments (name, model_name, port) VALUES (?, ?, ?)';
-  const result = await pool.query(query, [name, modelName, port]);
+    'INSERT INTO assignments (name, model_name, port, display_order) VALUES (?, ?, ?, ?)';
+  const result = await pool.query(query, [
+    name,
+    modelName,
+    port,
+    display_order,
+  ]);
   console.log(result);
   return Number(result.insertId);
 };
 
 // Read all Assignments
 export const getAllAssignments = async (): Promise<DBAssignment[]> => {
-  const query = 'SELECT * FROM assignments';
+  const query = 'SELECT * FROM assignments ORDER BY display_order ASC';
   return await pool.query(query);
 };
 
@@ -38,11 +44,18 @@ export const updateAssignment = async (
   id: number,
   name: string,
   modelName: string,
-  port: number
+  port: number,
+  display_order: number
 ): Promise<number> => {
   const query =
-    'UPDATE assignments SET name = ?, model_name = ?, port = ? WHERE id = ?';
-  const result = await pool.query(query, [name, modelName, port, id]);
+    'UPDATE assignments SET name = ?, model_name = ?, port = ?, display_order = ? WHERE id = ?';
+  const result = await pool.query(query, [
+    name,
+    modelName,
+    port,
+    display_order,
+    id,
+  ]);
   console.log(result);
   return Number(result.affectedRows);
 };

@@ -5,17 +5,23 @@ import { Model } from './types';
 export const createSpeechModel = async (
   name: string,
   size: number,
-  model_type: 'tts' | 'stt'
+  model_type: 'tts' | 'stt',
+  display_order: number
 ): Promise<number> => {
   const query =
-    'INSERT INTO speech_models (name, size, model_type) VALUES (?, ?, ?)';
-  const result = await pool.query(query, [name, size, model_type]);
+    'INSERT INTO speech_models (name, size, model_type, display_order) VALUES (?, ?, ?, ?)';
+  const result = await pool.query(query, [
+    name,
+    size,
+    model_type,
+    display_order,
+  ]);
   return Number(result.insertId);
 };
 
 // Read all SpeechModels
 export const getAllSpeechModels = async (): Promise<Model[]> => {
-  const query = 'SELECT * FROM speech_models';
+  const query = 'SELECT * FROM speech_models ORDER BY display_order ASC';
   return await pool.query(query);
 };
 
@@ -36,11 +42,17 @@ export const getSpeechModelByName = async (
 export const updateSpeechModel = async (
   name: string,
   size: number,
-  model_type: 'tts' | 'stt'
+  model_type: 'tts' | 'stt',
+  display_order: number
 ): Promise<number> => {
   const query =
-    'UPDATE speech_models SET size = ?, model_type = ? WHERE name = ?';
-  const result = await pool.query(query, [size, model_type, name]);
+    'UPDATE speech_models SET size = ?, model_type = ?, display_order = ? WHERE name = ?';
+  const result = await pool.query(query, [
+    size,
+    model_type,
+    display_order,
+    name,
+  ]);
   return Number(result.affectedRows);
 };
 

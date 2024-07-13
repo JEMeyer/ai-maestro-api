@@ -4,17 +4,19 @@ import { Computer } from './types';
 // Create a new computer
 export const createComputer = async (
   name: string,
-  ipAddr: string
+  ipAddr: string,
+  display_order: number
 ): Promise<number> => {
-  const query = 'INSERT INTO computers (name, ip_addr) VALUES (?, ?)';
-  const result = await pool.query(query, [name, ipAddr]);
+  const query =
+    'INSERT INTO computers (name, ip_addr, display_order) VALUES (?, ?, ?)';
+  const result = await pool.query(query, [name, ipAddr, display_order]);
   console.log(result);
   return Number(result.insertId);
 };
 
 // Read all computers
 export const getAllComputers = async (): Promise<Computer[]> => {
-  const query = 'SELECT * FROM computers';
+  const query = 'SELECT * FROM computers ORDER BY display_order ASC';
   return await pool.query(query);
 };
 
@@ -33,10 +35,12 @@ export const getComputerById = async (id: number): Promise<Computer | null> => {
 export const updateComputer = async (
   id: number,
   name: string,
-  ipAddr: string
+  ipAddr: string,
+  display_order: number
 ): Promise<number> => {
-  const query = 'UPDATE computers SET name = ?, ip_addr = ? WHERE id = ?';
-  const result = await pool.query(query, [name, ipAddr, id]);
+  const query =
+    'UPDATE computers SET name = ?, ip_addr = ?, display_order=? WHERE id = ?';
+  const result = await pool.query(query, [name, ipAddr, display_order, id]);
   console.log(result);
   return Number(result.affectedRows);
 };

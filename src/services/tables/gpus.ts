@@ -13,22 +13,25 @@ export const createGPU = async (
   name: string,
   vramSize: number,
   computerId: number,
+  display_order: number,
   weight?: number
 ): Promise<number> => {
   const query =
-    'INSERT INTO gpus (name, vram_size, computer_id, weight) VALUES (?, ?, ?, ?)';
+    'INSERT INTO gpus (name, vram_size, computer_id, weight, display_order) VALUES (?, ?, ?, ?)';
   const result = await pool.query(query, [
     name,
     vramSize,
     computerId,
     weight || null,
+    display_order,
   ]);
   return Number(result.insertId);
 };
 
 // Read all GPUs
+// Note, display order will look weird here, but .filter() is used in the client so it should work out
 export const getAllGPUs = async (): Promise<GPU[]> => {
-  const query = 'SELECT * FROM gpus';
+  const query = 'SELECT * FROM gpus ORDER BY display_order ASC';
   return await pool.query(query);
 };
 
@@ -49,15 +52,17 @@ export const updateGPU = async (
   name: string,
   vramSize: number,
   computerId: number,
+  display_order: number,
   weight?: number
 ): Promise<number> => {
   const query =
-    'UPDATE gpus SET name = ?, vram_size = ?, computer_id = ?, weight = ? WHERE id = ?';
+    'UPDATE gpus SET name = ?, vram_size = ?, computer_id = ?, weight = ?, display_order = ? WHERE id = ?';
   const result = await pool.query(query, [
     name,
     vramSize,
     computerId,
     weight || null,
+    display_order,
     id,
   ]);
   return Number(result[0].affectedRows);
