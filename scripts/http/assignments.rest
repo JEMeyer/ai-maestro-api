@@ -10,9 +10,9 @@ Content-Type: application/json
 
 {
   "name": "New Assignment",
-  "modelName": "Model1",
+  "model_name": "Model1",
   "maestroPort": 8080,
-  "gpuIds": [1, 2]
+  "gpu_ids": [1, 2]
 }
 
 ### Delete an assignment
@@ -29,5 +29,5 @@ Content-Type: application/json
   "name": "Updated Assignment",
   "modelName": "Model2",
   "maestroPort": 8081,
-  "gpuIds": [2, 3]
+  "gpu_ids": [2, 3]
 }

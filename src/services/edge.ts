@@ -1,7 +1,7 @@
 interface MakeContainerProps {
   containerName: string;
   port: string;
-  gpuIds: number[];
+  gpu_ids: number[];
   diffusionModel?: string; // 'sdxl-turbo' or 'sd-turbo'
 }
 

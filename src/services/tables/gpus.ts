@@ -3,16 +3,16 @@ import { pool } from '../db';
 interface GPU {
   id: number;
   name: string;
-  vramSize: number;
-  computerId: number;
+  vram_size: number;
+  computer_id: number;
   weight?: number;
 }
 
 // Create a new GPU
 export const createGPU = async (
   name: string,
-  vramSize: number,
-  computerId: number,
+  vram_size: number,
+  computer_id: number,
   display_order: number,
   weight?: number
 ): Promise<number> => {
@@ -20,8 +20,8 @@ export const createGPU = async (
     'INSERT INTO gpus (name, vram_size, computer_id, weight, display_order) VALUES (?, ?, ?, ?)';
   const result = await pool.query(query, [
     name,
-    vramSize,
-    computerId,
+    vram_size,
+    computer_id,
     weight || null,
     display_order,
   ]);
@@ -50,8 +50,8 @@ export const getGPUById = async (id: number): Promise<GPU | null> => {
 export const updateGPU = async (
   id: number,
   name: string,
-  vramSize: number,
-  computerId: number,
+  vram_size: number,
+  computer_id: number,
   display_order: number,
   weight?: number
 ): Promise<number> => {
@@ -59,8 +59,8 @@ export const updateGPU = async (
     'UPDATE gpus SET name = ?, vram_size = ?, computer_id = ?, weight = ?, display_order = ? WHERE id = ?';
   const result = await pool.query(query, [
     name,
-    vramSize,
-    computerId,
+    vram_size,
+    computer_id,
     weight || null,
     display_order,
     id,

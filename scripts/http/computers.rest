@@ -17,10 +17,13 @@ Content-Type: application/json
 DELETE {{baseMaestroUrl}}:{{maestroPort}}/api/computers/<ID>
 
 ### Update an computer
-PUT {{baseMaestroUrl}}:{{maestroPort}}/api/computers/<ID>
+PUT {{baseMaestroUrl}}:{{maestroPort}}/api/computers/1
 Content-Type: application/json
 
 {
-  "name": "Updated Computer",
-  "ipAddr": "0.0.0.1"
-}
+    "id": 1,
+    "name": "3090 Cluster - 1",
+    "ip_addr": "192.168.1.32",
+    "edge_server_port": 4000,
+    "display_order": 1
+  }

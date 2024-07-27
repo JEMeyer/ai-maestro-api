@@ -38,7 +38,7 @@ export interface Assignment {
   id: number;
   name: string;
   model_name: string;
-  gpuIds: number[];
+  gpu_ids: number[];
   port: number;
   display_order: number;
 }

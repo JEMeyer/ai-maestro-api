@@ -15,11 +15,11 @@ export const getGpuById = async (req: Request, res: Response) => {
 };
 
 export const createGPU = async (req: Request, res: Response) => {
-  const { name, vramSize, computerId, weight, display_order } = req.body;
+  const { name, vram_size, computer_id, weight, display_order } = req.body;
   const id = await GpuService.createGPU(
     name,
-    vramSize,
-    computerId,
+    vram_size,
+    computer_id,
     display_order,
     weight
   );
@@ -34,12 +34,12 @@ export const deleteGPU = async (req: Request, res: Response) => {
 
 export const updateGPU = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { name, vramSize, computerId, weight, display_order } = req.body;
+  const { name, vram_size, computer_id, weight, display_order } = req.body;
   await GpuService.updateGPU(
     Number(id),
     name,
-    vramSize,
-    computerId,
+    vram_size,
+    computer_id,
     display_order,
     weight
   );
