@@ -43,7 +43,7 @@ export const getAssignmentById = async (
 export const updateAssignment = async (
   id: number,
   name: string,
-  modelName: string,
+  model_name: string,
   port: number,
   display_order: number
 ): Promise<number> => {
@@ -51,7 +51,7 @@ export const updateAssignment = async (
     'UPDATE assignments SET name = ?, model_name = ?, port = ?, display_order = ? WHERE id = ?';
   const result = await pool.query(query, [
     name,
-    modelName,
+    model_name,
     port,
     display_order,
     id,
