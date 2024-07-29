@@ -1,11 +1,11 @@
 ### Get all gpus
-GET {{baseMaestroUrl}}:{{maestroPort}}/api/gpus
+GET {{maestroHost}}/api/gpus
 
 ### Get gpu by id
-GET {{baseMaestroUrl}}:{{maestroPort}}/api/gpus/<ID>
+GET {{maestroHost}}/api/gpus/<ID>
 
 ### Create a new gpu
-POST {{baseMaestroUrl}}:{{maestroPort}}/api/gpus
+POST {{maestroHost}}/api/gpus
 Content-Type: application/json
 
 {
@@ -16,10 +16,10 @@ Content-Type: application/json
 }
 
 ### Delete a gpu
-DELETE {{baseMaestroUrl}}:{{maestroPort}}/api/gpus/<ID>
+DELETE {{maestroHost}}/api/gpus/<ID>
 
 ### Update a gpu
-PUT {{baseMaestroUrl}}:{{maestroPort}}/api/assignments/<ID>
+PUT {{maestroHost}}/api/assignments/<ID>
 Content-Type: application/json
 
 {

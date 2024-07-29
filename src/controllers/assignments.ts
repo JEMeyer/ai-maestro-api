@@ -51,7 +51,7 @@ export const createAssignment = async (req: Request, res: Response) => {
       AssignmentGpuService.createDBAssignmentGPU(assignmentId, gpuId)
     )
   );
-  res.json({ assignmentId });
+  res.json({ id: assignmentId });
 };
 
 export const deleteAssignment = async (req: Request, res: Response) => {

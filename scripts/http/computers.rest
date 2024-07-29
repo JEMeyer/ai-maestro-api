@@ -1,11 +1,11 @@
 ### Get all computers
-GET {{baseMaestroUrl}}:{{maestroPort}}/api/computers
+GET {{maestroHost}}/api/computers
 
 ### Get computer by ID
-GET {{baseMaestroUrl}}:{{maestroPort}}/api/computers/<ID>
+GET {{maestroHost}}/api/computers/<ID>
 
 ### Create a new computer
-POST {{baseMaestroUrl}}:{{maestroPort}}/api/computers
+POST {{maestroHost}}/api/computers
 Content-Type: application/json
 
 {
@@ -14,10 +14,10 @@ Content-Type: application/json
 }
 
 ### Delete an computer
-DELETE {{baseMaestroUrl}}:{{maestroPort}}/api/computers/<ID>
+DELETE {{maestroHost}}/api/computers/<ID>
 
 ### Update an computer
-PUT {{baseMaestroUrl}}:{{maestroPort}}/api/computers/1
+PUT {{maestroHost}}/api/computers/1
 Content-Type: application/json
 
 {

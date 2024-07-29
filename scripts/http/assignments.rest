@@ -1,11 +1,11 @@
 ### Get all assignments
-GET {{baseMaestroUrl}}:{{maestroPort}}/api/assignments
+GET {{maestroHost}}/api/assignments
 
 ### Get assignment by ID
-GET {{baseMaestroUrl}}:{{maestroPort}}/api/assignments/<ID>
+GET {{maestroHost}}/api/assignments/<ID>
 
 ### Create a new assignment
-POST {{baseMaestroUrl}}:{{maestroPort}}/api/assignments
+POST {{maestroHost}}/api/assignments
 Content-Type: application/json
 
 {
@@ -16,13 +16,13 @@ Content-Type: application/json
 }
 
 ### Delete an assignment
-DELETE {{baseMaestroUrl}}:{{maestroPort}}/api/assignments/<ID>
+DELETE {{maestroHost}}/api/assignments/<ID>
 
 ### Deploy all assignments
-POST {{baseMaestroUrl}}:{{maestroPort}}/api/assignments/deployAll
+POST {{maestroHost}}/api/assignments/deployAll
 
 ### Update an assignment
-PUT {{baseMaestroUrl}}:{{maestroPort}}/api/assignments/<ID>
+PUT {{maestroHost}}/api/assignments/<ID>
 Content-Type: application/json
 
 {
