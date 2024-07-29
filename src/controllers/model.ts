@@ -47,17 +47,16 @@ export const getModelByName = async (req: Request, res: Response) => {
 export const createModel = async (req: Request, res: Response) => {
   const { name, size, model_type, display_order } = req.body;
 
-  let id;
   switch (model_type) {
     case 'llm':
-      id = await LlmService.createLLM(name, size, display_order);
+      await LlmService.createLLM(name, size, display_order);
       break;
     case 'diffusor':
-      id = await DiffusorService.createDiffusor(name, size, display_order);
+      await DiffusorService.createDiffusor(name, size, display_order);
       break;
     case 'stt':
     case 'tts':
-      id = await SpeechModelService.createSpeechModel(
+      await SpeechModelService.createSpeechModel(
         name,
         size,
         model_type,
@@ -69,7 +68,7 @@ export const createModel = async (req: Request, res: Response) => {
       return;
   }
 
-  res.json({ id });
+  res.sendStatus(201);
 };
 
 export const deleteModel = async (req: Request, res: Response) => {
@@ -91,5 +90,31 @@ export const deleteModel = async (req: Request, res: Response) => {
       res.status(400).json({ error: 'Invalid data/payload' });
       return;
   }
+  res.sendStatus(204);
+};
+
+export const updateModel = async (req: Request, res: Response) => {
+  const { name, size, model_type, display_order } = req.body;
+  switch (model_type) {
+    case 'llm':
+      await LlmService.updateLLM(name, size, display_order);
+      break;
+    case 'diffusor':
+      await DiffusorService.updateDiffusor(name, size, display_order);
+      break;
+    case 'stt':
+    case 'tts':
+      await SpeechModelService.updateSpeechModel(
+        name,
+        size,
+        model_type,
+        display_order
+      );
+      break;
+    default:
+      res.status(400).json({ error: 'Invalid data/payload' });
+      return;
+  }
+
   res.sendStatus(204);
 };

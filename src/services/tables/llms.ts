@@ -6,10 +6,9 @@ export const createLLM = async (
   name: string,
   size: number,
   display_order: number
-): Promise<number> => {
+): Promise<void> => {
   const query = 'INSERT INTO llms (name, size, display_order) VALUES (?, ?, ?)';
-  const result = await pool.query(query, [name, size, display_order]);
-  return Number(result.insertId);
+  await pool.query(query, [name, size, display_order]);
 };
 
 // Read all LLMs

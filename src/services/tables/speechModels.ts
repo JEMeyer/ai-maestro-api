@@ -7,16 +7,10 @@ export const createSpeechModel = async (
   size: number,
   model_type: 'tts' | 'stt',
   display_order: number
-): Promise<number> => {
+): Promise<void> => {
   const query =
     'INSERT INTO speech_models (name, size, model_type, display_order) VALUES (?, ?, ?, ?)';
-  const result = await pool.query(query, [
-    name,
-    size,
-    model_type,
-    display_order,
-  ]);
-  return Number(result.insertId);
+  await pool.query(query, [name, size, model_type, display_order]);
 };
 
 // Read all SpeechModels
