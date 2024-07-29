@@ -64,9 +64,9 @@ export const deleteAssignment = async (req: Request, res: Response) => {
 
 export const updateAssignment = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { name, modelName, port, gpu_ids, display_order } = req.body as {
+  const { name, model_name, port, gpu_ids, display_order } = req.body as {
     name: string;
-    modelName: string;
+    model_name: string;
     port: number;
     gpu_ids: number[];
     display_order: number;
@@ -78,7 +78,7 @@ export const updateAssignment = async (req: Request, res: Response) => {
     AssignmentService.updateAssignment(
       idAsNumber,
       name,
-      modelName,
+      model_name,
       port,
       display_order
     ),
