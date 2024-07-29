@@ -74,7 +74,7 @@ export const updateAssignment = async (req: Request, res: Response) => {
   const idAsNumber = Number(id);
 
   // First update the assignment record, and pull all current assignmentGpus
-  const [affectedARows, currentAssignmentGpus] = await Promise.all([
+  const [affectedRows, currentAssignmentGpus] = await Promise.all([
     AssignmentService.updateAssignment(
       idAsNumber,
       name,
@@ -106,7 +106,7 @@ export const updateAssignment = async (req: Request, res: Response) => {
           .filter(Boolean)
       )
   );
-  res.json({ affectedARows });
+  res.json({ affectedRows });
 };
 
 export const deployAssignments = async (req: Request, res: Response) => {

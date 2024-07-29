@@ -35,7 +35,7 @@ export const deleteGPU = async (req: Request, res: Response) => {
 export const updateGPU = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { name, vram_size, computer_id, weight, display_order } = req.body;
-  await GpuService.updateGPU(
+  const affectedRows = await GpuService.updateGPU(
     Number(id),
     name,
     vram_size,
@@ -43,7 +43,7 @@ export const updateGPU = async (req: Request, res: Response) => {
     display_order,
     weight
   );
-  res.sendStatus(204);
+  res.json({ affectedRows });
 };
 
 export const getGpuLockStatuses = async (_req: Request, res: Response) => {

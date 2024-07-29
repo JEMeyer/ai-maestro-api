@@ -95,16 +95,21 @@ export const deleteModel = async (req: Request, res: Response) => {
 
 export const updateModel = async (req: Request, res: Response) => {
   const { name, size, model_type, display_order } = req.body;
+  let affectedRows = 0;
   switch (model_type) {
     case 'llm':
-      await LlmService.updateLLM(name, size, display_order);
+      affectedRows = await LlmService.updateLLM(name, size, display_order);
       break;
     case 'diffusor':
-      await DiffusorService.updateDiffusor(name, size, display_order);
+      affectedRows = await DiffusorService.updateDiffusor(
+        name,
+        size,
+        display_order
+      );
       break;
     case 'stt':
     case 'tts':
-      await SpeechModelService.updateSpeechModel(
+      affectedRows = await SpeechModelService.updateSpeechModel(
         name,
         size,
         model_type,
@@ -116,5 +121,5 @@ export const updateModel = async (req: Request, res: Response) => {
       return;
   }
 
-  res.sendStatus(204);
+  res.json({ affectedRows });
 };
