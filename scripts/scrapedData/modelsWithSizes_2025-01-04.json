@@ -1,0 +1,226 @@
+[
+  {
+    "modelName": "llama3.3",
+    "modelSize": 43
+  },
+  {
+    "modelName": "qwq",
+    "modelSize": 20
+  },
+  {
+    "modelName": "llama3.2-vision",
+    "modelSize": 7.9
+  },
+  {
+    "modelName": "llama3.2",
+    "modelSize": 2
+  },
+  {
+    "modelName": "llama3.1",
+    "modelSize": 4.9
+  },
+  {
+    "modelName": "qwen2",
+    "modelSize": 4.4
+  },
+  {
+    "modelName": "qwen2.5",
+    "modelSize": 4.7
+  },
+  {
+    "modelName": "gemma2",
+    "modelSize": 5.4
+  },
+  {
+    "modelName": "qwen2.5-coder",
+    "modelSize": 4.7
+  },
+  {
+    "modelName": "mistral-nemo",
+    "modelSize": 7.1
+  },
+  {
+    "modelName": "deepseek-coder-v2",
+    "modelSize": 8.9
+  },
+  {
+    "modelName": "phi3.5",
+    "modelSize": 2.2
+  },
+  {
+    "modelName": "bge-m3",
+    "modelSize": 1.2
+  },
+  {
+    "modelName": "smollm",
+    "modelSize": 0.991
+  },
+  {
+    "modelName": "codegeex4",
+    "modelSize": 5.5
+  },
+  {
+    "modelName": "mistral-large",
+    "modelSize": 73
+  },
+  {
+    "modelName": "qwen2-math",
+    "modelSize": 4.4
+  },
+  {
+    "modelName": "glm4",
+    "modelSize": 5.5
+  },
+  {
+    "modelName": "reflection",
+    "modelSize": 40
+  },
+  {
+    "modelName": "smollm2",
+    "modelSize": 1.8
+  },
+  {
+    "modelName": "hermes3",
+    "modelSize": 4.7
+  },
+  {
+    "modelName": "yi-coder",
+    "modelSize": 5
+  },
+  {
+    "modelName": "internlm2",
+    "modelSize": 4.5
+  },
+  {
+    "modelName": "falcon",
+    "modelSize": 4.2
+  },
+  {
+    "modelName": "minicpm-v",
+    "modelSize": 5.5
+  },
+  {
+    "modelName": "athene-v2",
+    "modelSize": 47
+  },
+  {
+    "modelName": "mistral-small",
+    "modelSize": 13
+  },
+  {
+    "modelName": "nemotron-mini",
+    "modelSize": 2.7
+  },
+  {
+    "modelName": "llama3-groq-tool-use",
+    "modelSize": 4.7
+  },
+  {
+    "modelName": "nemotron",
+    "modelSize": 43
+  },
+  {
+    "modelName": "granite3-dense",
+    "modelSize": 1.6
+  },
+  {
+    "modelName": "mathstral",
+    "modelSize": 4.1
+  },
+  {
+    "modelName": "reader-lm",
+    "modelSize": 0.935
+  },
+  {
+    "modelName": "solar-pro",
+    "modelSize": 13
+  },
+  {
+    "modelName": "marco-o1",
+    "modelSize": 4.7
+  },
+  {
+    "modelName": "smallthinker",
+    "modelSize": 3.6
+  },
+  {
+    "modelName": "granite3-moe",
+    "modelSize": 0.822
+  },
+  {
+    "modelName": "aya-expanse",
+    "modelSize": 5.1
+  },
+  {
+    "modelName": "nuextract",
+    "modelSize": 2.2
+  },
+  {
+    "modelName": "bge-large",
+    "modelSize": 0.671
+  },
+  {
+    "modelName": "firefunction-v2",
+    "modelSize": 40
+  },
+  {
+    "modelName": "deepseek-v2.5",
+    "modelSize": 133
+  },
+  {
+    "modelName": "shieldgemma",
+    "modelSize": 5.8
+  },
+  {
+    "modelName": "llama-guard3",
+    "modelSize": 4.9
+  },
+  {
+    "modelName": "paraphrase-multilingual",
+    "modelSize": 0.563
+  },
+  {
+    "modelName": "bespoke-minicheck",
+    "modelSize": 4.7
+  },
+  {
+    "modelName": "opencoder",
+    "modelSize": 4.7
+  },
+  {
+    "modelName": "granite3.1-dense",
+    "modelSize": 4.9
+  },
+  {
+    "modelName": "falcon3",
+    "modelSize": 4.6
+  },
+  {
+    "modelName": "snowflake-arctic-embed2",
+    "modelSize": 1.2
+  },
+  {
+    "modelName": "tulu3",
+    "modelSize": 4.9
+  },
+  {
+    "modelName": "exaone3.5",
+    "modelSize": 4.8
+  },
+  {
+    "modelName": "granite3.1-moe",
+    "modelSize": 2
+  },
+  {
+    "modelName": "granite-embedding",
+    "modelSize": 0.063
+  },
+  {
+    "modelName": "granite3-guardian",
+    "modelSize": 2.7
+  },
+  {
+    "modelName": "sailor2",
+    "modelSize": 5.2
+  }
+]

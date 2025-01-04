@@ -12,15 +12,15 @@ const scrapeOllamaModels = async () => {
       const $ = load(htmlContent);
 
       // Define an array to hold the model information
-      const modelNames: string[] = [];
+      const modelNames = new Set<string>();
 
       // Select the elements that contain the model information
       $('li.flex.items-baseline.border-b.border-neutral-200.py-6').each(
         (index, element) => {
-          const name = $(element).find('h2 > span').text().trim();
+          const name = $(element).find('h2 > div > span').text().trim();
 
           // Push the model name to the array - archived one we want to omit so just make sure no spaces
-          if (!name.includes(' ')) modelNames.push(name);
+          if (!name.includes(' ') && name != '') modelNames.add(name);
         }
       );
 
@@ -31,8 +31,8 @@ const scrapeOllamaModels = async () => {
       const filename = `modelNames_${today}.json`;
 
       // Write the modelNames array to a JSON file
-      writeFileSync(filename, JSON.stringify(modelNames, null, 2));
-      console.log(`Saved ${modelNames.length} model names to ${filename}`);
+      writeFileSync(filename, JSON.stringify(Array.from(modelNames), null, 2));
+      console.log(`Saved ${modelNames.size} model names to ${filename}`);
     } else {
       throw new Error('Failed to fetch the model data.');
     }
