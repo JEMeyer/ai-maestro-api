@@ -1,44 +1,37 @@
-# Use a minimal Node.js base image
-FROM node:18-alpine as base
+# =========================
+# Stage 1: Base
+# =========================
+FROM node:20-alpine AS base
 
-# Enable pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
-
-# Builder stage
-FROM base AS builder
-
-# Set the working directory inside the container
 WORKDIR /app
 
-# Copy package.json and pnpm-lock.yaml
-COPY package.json pnpm-lock.yaml ./
+# Copy package files and install dependencies
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile
 
-# Install dependencies
-RUN pnpm install --frozen-lockfile
-
-# Copy the rest of the project files
+# Copy the rest of the application code
 COPY . .
 
-# Build the TypeScript code to JavaScript
-RUN pnpm run build
+# Build the TypeScript application
+RUN yarn build
 
-# Final runtime image
-FROM base
-
-# Set the working directory inside the container
+# =========================
+# Stage 4: Production Runtime
+# =========================
+FROM node:20-alpine AS prod-runtime
 WORKDIR /app
 
-# Copy the package.json and pnpm-lock.yaml files from the builder image
-COPY --from=builder /app/package.json /app/pnpm-lock.yaml ./
+# Copy built files and node_modules from the build stage
+COPY --from=base /app/dist ./dist
+COPY --from=base /app/node_modules ./node_modules
+COPY --from=base /app/package.json ./package.json
+COPY --from=base /app/yarn.lock ./yarn.lock
 
-# Copy the built JavaScript files from the builder image
-COPY --from=builder /app/dist ./dist
-
-# Install production dependencies
-RUN pnpm install --prod --frozen-lockfile
-
-# Web API
+# Expose the backend port
 EXPOSE 3000
 
-# Start the application
-CMD ["node", "dist/main.js"]
+# Set environment variables
+ENV NODE_ENV=production
+
+# Start the backend server
+CMD ["yarn", "start"]
