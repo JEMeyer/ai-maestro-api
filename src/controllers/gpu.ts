@@ -48,15 +48,12 @@ export const updateGPU = async (req: Request, res: Response) => {
 
 export const getGpuLockStatuses = async (_req: Request, res: Response) => {
   try {
-    const keys = await redisClient.keys('gpu-lock:*');
+    const keys = await redisClient.keys('gpu-status:*');
     const statuses = await Promise.all(keys.map((key) => redisClient.get(key)));
-    const statusMap = keys.reduce(
-      (acc, key, index) => {
-        acc[key] = statuses[index];
-        return acc;
-      },
-      {} as { [key: string]: string | null }
-    );
+    const statusMap = keys.reduce((acc, key, index) => {
+      acc[key] = statuses[index];
+      return acc;
+    }, {} as { [key: string]: string | null });
 
     res.json(statusMap);
   } catch (error) {
