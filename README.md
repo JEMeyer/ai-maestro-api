@@ -1,3 +1,11 @@
+# 🚀 We've Moved!
+
+This project has reached the end of its lifecycle and has been **deprecated**. But don’t worry! We've built something even better: **[AI-Maestro](https://github.com/JEMeyer/ai-maestro)**. 
+
+AI-Maestro is a **faster, more scalable, and actively maintained** solution that replaces and improves upon this project. 
+
+We recommend checking it out for a **better experience and continued support**! 🎉
+
 # AI Maestro API
 
 AI Maestro API is an Express server application that orchestrates setting up Ollama Docker containers and manages requests to ensure one request per GPU. This project provides endpoints for managing resources such as computers, GPUs, models, and assignments, making it easier to deploy and manage AI models on edge devices.
